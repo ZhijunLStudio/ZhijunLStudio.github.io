@@ -9,77 +9,43 @@
 :root{
   --blue:#024BA1;--blue-bg:#EDF2FB;--navy:#1A2A44;
   --white:#FFFFFF;--g50:#F8F9FA;--g100:#F1F3F5;--g200:#E9ECEF;
-  --g300:#DEE2E6;--g400:#CED4DA;--g500:#6C757D;--g700:#495057;--g900:#212529;
-  --green:#2D8B4E;--purple:#6A4C93;--orange:#ED7D31;
+  --g300:#DEE2E6;--g500:#6C757D;--g700:#495057;--g900:#212529;
+  --purple:#6A4C93;
 }
 body{font-family:"Helvetica Neue",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--g900);line-height:1.75;font-size:15px;background:var(--white)}
 
-.topnav{position:fixed;top:0;left:0;right:0;height:56px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;padding:0 36px;z-index:100;border-bottom:1px solid var(--g200)}
-.topnav-title{font-size:16px;font-weight:700;color:var(--blue);letter-spacing:-.3px}
-.topnav-links a{color:var(--g500);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s;margin-left:20px}
-.topnav-links a:hover{color:var(--blue)}
+.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:var(--blue);display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:100;box-shadow:0 1px 6px rgba(0,0,0,.15)}
+.topnav-title{color:var(--white);font-size:15px;font-weight:600;letter-spacing:.3px}
 
-.hero{padding:140px 0 60px;text-align:center;max-width:640px;margin:0 auto;padding-left:24px;padding-right:24px}
-.hero h1{font-size:38px;font-weight:800;color:var(--navy);letter-spacing:-.8px;margin-bottom:10px}
-.hero h1 span{color:var(--blue)}
-.hero .subtitle{font-size:15px;color:var(--g500);line-height:1.7;margin-bottom:32px}
+.hero{padding:100px 0 40px;text-align:center}
+.hero h1{font-size:32px;font-weight:700;color:var(--blue)}
 
-.skills-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:40px}
-.skill-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;border:1.5px solid var(--g200);color:var(--g700);background:var(--white);transition:all .2s}
-.skill-chip:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-bg)}
-.skill-chip .sc-icon{font-size:15px}
-
-.section-divider{width:60px;height:3px;background:var(--g200);margin:0 auto 48px;border-radius:2px}
-
-/* Posts */
 .posts-wrap{max-width:680px;margin:0 auto;padding:0 24px 60px}
-.posts-wrap h2{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:20px;text-align:center}
-.post-card{display:block;padding:22px 26px;margin-bottom:10px;border:1px solid var(--g200);border-radius:10px;text-decoration:none;transition:all .2s;background:var(--white)}
-.post-card:hover{border-color:var(--blue);box-shadow:0 2px 16px rgba(2,75,161,.06);transform:translateY(-1px)}
-.post-card .pc-meta{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.post-card{display:block;padding:20px 0;border-bottom:1px solid var(--g100);text-decoration:none;transition:background .15s}
+.post-card:hover{background:var(--g50);margin:0 -24px;padding-left:24px;padding-right:24px;border-radius:6px}
+.post-card .pc-meta{display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .post-card .pc-date{font-size:12px;color:var(--g500)}
-.post-card .pc-title{font-size:16px;font-weight:700;color:var(--navy);line-height:1.4}
+.post-card .pc-title{font-size:17px;font-weight:700;color:var(--navy);line-height:1.4}
 .post-card:hover .pc-title{color:var(--blue)}
-.post-card .pc-desc{font-size:13px;color:var(--g500);line-height:1.6;margin-top:4px}
+.post-card .pc-desc{font-size:13px;color:var(--g500);line-height:1.6;margin-top:2px}
 .tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
 .tag-purple{background:#F3E5F5;color:var(--purple)}
 .tag-blue{background:var(--blue-bg);color:var(--blue)}
 
-.footer{text-align:center;padding:36px 0 28px;font-size:12px;color:var(--g400)}
-.footer a{color:var(--g500);text-decoration:none}
-.footer a:hover{color:var(--blue)}
-
-@media(max-width:760px){.hero h1{font-size:26px}.topnav{padding:0 20px}}
+@media(max-width:760px){.hero h1{font-size:24px}}
 </style>
 </head>
 <body>
 
 <nav class="topnav">
   <div class="topnav-title">AI4EDA</div>
-  <div class="topnav-links">
-    <a href="https://github.com/ZhijunLStudio">GitHub</a>
-  </div>
 </nav>
 
 <header class="hero">
-  <h1>AI<span>4</span>EDA</h1>
-  <p class="subtitle">AI-driven Electronic Design Automation</p>
-
-  <div class="skills-row">
-    <span class="skill-chip"><span class="sc-icon">🐍</span>Python</span>
-    <span class="skill-chip"><span class="sc-icon">⚡</span>C++ / CUDA</span>
-    <span class="skill-chip"><span class="sc-icon">🔥</span>PyTorch</span>
-    <span class="skill-chip"><span class="sc-icon">🤖</span>LLM Agent</span>
-    <span class="skill-chip"><span class="sc-icon">📐</span>Optimization</span>
-    <span class="skill-chip"><span class="sc-icon">🔌</span>EDA / SPICE</span>
-    <span class="skill-chip"><span class="sc-icon">🧬</span>Harness Eng.</span>
-  </div>
+  <h1>AI4EDA</h1>
 </header>
 
-<div class="section-divider"></div>
-
 <div class="posts-wrap">
-  <h2>Posts</h2>
 
   <a class="post-card" href="posts/harness-design-review.html">
     <div class="pc-meta">
@@ -92,10 +58,6 @@ body{font-family:"Helvetica Neue",-apple-system,"PingFang SC","Microsoft YaHei",
   </a>
 
 </div>
-
-<footer class="footer">
-  <a href="https://github.com/ZhijunLStudio">GitHub</a>
-</footer>
 
 </body>
 </html>
