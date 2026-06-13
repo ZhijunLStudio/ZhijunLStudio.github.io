@@ -3,41 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI4EDA · ZhijunLStudio</title>
+<title>AI4EDA</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --blue:#024BA1;--blue-bg:#EDF2FB;--navy:#1A2A44;--orange:#ED7D31;
   --white:#FFFFFF;--g50:#F8F9FA;--g100:#F1F3F5;--g200:#E9ECEF;
-  --g300:#DEE2E6;--g500:#6C757D;--g700:#495057;--g900:#212529;
+  --g300:#DEE2E6;--g400:#CED4DA;--g500:#6C757D;--g700:#495057;--g900:#212529;
   --green:#2D8B4E;--purple:#6A4C93;
 }
 body{font-family:"Helvetica Neue",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--g900);line-height:1.75;font-size:15px;background:var(--white)}
-.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:var(--blue);display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:100;box-shadow:0 1px 6px rgba(0,0,0,.15)}
-.topnav-title{color:var(--white);font-size:15px;font-weight:600;letter-spacing:.3px}
-.topnav-links a{color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;margin-left:16px;transition:color .2s}
-.topnav-links a:hover{color:var(--white)}
-.container{max-width:820px;margin:0 auto;padding:0 24px}
-.hero{padding:100px 0 52px;text-align:center}
-.hero h1{font-size:34px;font-weight:700;color:var(--blue);margin-bottom:6px}
-.hero .bio{font-size:16px;color:var(--g500);margin-bottom:20px;max-width:520px;margin-left:auto;margin-right:auto}
-.hero .links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-.hero .links a{color:var(--blue);text-decoration:none;font-size:14px;font-weight:500;padding:6px 16px;border:1.5px solid var(--blue);border-radius:20px;transition:all .2s}
-.hero .links a:hover{background:var(--blue);color:var(--white)}
-section{padding:36px 0;border-top:1px solid var(--g200)}
-h2{font-size:22px;font-weight:700;color:var(--navy);margin-bottom:20px}
-.post-list{list-style:none}
-.post-item{display:block;padding:20px 0;border-bottom:1px solid var(--g100);text-decoration:none;transition:background .15s}
-.post-item:hover{background:var(--g50);margin:0 -24px;padding-left:24px;padding-right:24px;border-radius:6px}
-.post-date{font-size:12px;color:var(--g500);margin-bottom:4px}
-.post-title{font-size:18px;font-weight:600;color:var(--navy);margin-bottom:6px;text-decoration:none}
-.post-item:hover .post-title{color:var(--blue)}
-.post-desc{font-size:14px;color:var(--g500);line-height:1.6}
-.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;margin-right:6px}
-.tag-blue{background:var(--blue-bg);color:var(--blue)}.tag-orange{background:#FFF3E0;color:var(--orange)}
-.tag-green{background:#E8F5E9;color:var(--green)}.tag-purple{background:#F3E5F5;color:var(--purple)}
-.footer{text-align:center;padding:40px 0;font-size:12px;color:var(--g500);border-top:1px solid var(--g200)}
-@media(max-width:760px){.hero h1{font-size:24px}.topnav-links{display:none}}
+
+/* Nav */
+.topnav{position:fixed;top:0;left:0;right:0;height:56px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;padding:0 36px;z-index:100;border-bottom:1px solid var(--g200)}
+.topnav-title{font-size:16px;font-weight:700;color:var(--blue);letter-spacing:-.3px}
+.topnav-links{display:flex;gap:20px;align-items:center}
+.topnav-links a{color:var(--g500);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}
+.topnav-links a:hover{color:var(--blue)}
+
+/* Hero */
+.hero{padding:140px 0 64px;text-align:center}
+.hero .avatar{width:64px;height:64px;border-radius:32px;background:linear-gradient(135deg,var(--blue),var(--purple));display:inline-flex;align-items:center;justify-content:center;font-size:22px;color:var(--white);margin-bottom:20px}
+.hero h1{font-size:36px;font-weight:800;color:var(--navy);margin-bottom:12px;letter-spacing:-.5px}
+.hero h1 span{color:var(--blue)}
+.hero .bio{font-size:15px;color:var(--g500);max-width:600px;margin:0 auto 28px;line-height:1.8}
+.hero .bio em{font-style:normal;color:var(--g700);font-weight:500}
+.hero .links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hero .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:22px;font-size:13px;font-weight:600;text-decoration:none;transition:all .2s}
+.hero .btn-primary{background:var(--blue);color:var(--white)}
+.hero .btn-primary:hover{background:var(--blue-dk);transform:translateY(-1px);box-shadow:0 4px 12px rgba(2,75,161,.25)}
+.hero .btn-ghost{color:var(--g700);border:1.5px solid var(--g300)}
+.hero .btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+
+/* Posts */
+.posts-wrap{max-width:760px;margin:0 auto;padding:0 24px}
+.section-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid var(--g100)}
+.section-header h2{font-size:20px;font-weight:700;color:var(--navy)}
+.section-header .count{font-size:13px;color:var(--g500)}
+.post-card{display:block;padding:24px 28px;margin-bottom:12px;border:1px solid var(--g200);border-radius:10px;text-decoration:none;transition:all .2s;background:var(--white)}
+.post-card:hover{border-color:var(--blue-lt);box-shadow:0 2px 16px rgba(2,75,161,.06);transform:translateY(-1px)}
+.post-card .pc-meta{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.post-card .pc-date{font-size:12px;color:var(--g500)}
+.post-card .pc-title{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:8px;line-height:1.4}
+.post-card:hover .pc-title{color:var(--blue)}
+.post-card .pc-desc{font-size:14px;color:var(--g500);line-height:1.65}
+
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;letter-spacing:.2px}
+.tag-purple{background:#F3E5F5;color:var(--purple)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-orange{background:#FFF3E0;color:var(--orange)}
+.tag-green{background:#E8F5E9;color:var(--green)}
+
+/* Timeline intro */
+.intro-cards{display:flex;gap:14px;margin:0 auto 48px;max-width:700px;flex-wrap:wrap;justify-content:center}
+.intro-card{flex:1;min-width:180px;max-width:220px;text-align:center;padding:20px 16px;border-radius:10px;background:var(--g50);border:1px solid var(--g200)}
+.intro-card .ic-icon{font-size:24px;margin-bottom:8px}
+.intro-card .ic-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.intro-card .ic-desc{font-size:12px;color:var(--g500);line-height:1.5}
+
+.footer{text-align:center;padding:48px 0 32px;font-size:12px;color:var(--g400);margin-top:48px}
+@media(max-width:760px){.hero h1{font-size:26px}.topnav{padding:0 20px}.intro-cards{flex-direction:column;align-items:center}}
 </style>
 </head>
 <body>
@@ -45,48 +70,71 @@ h2{font-size:22px;font-weight:700;color:var(--navy);margin-bottom:20px}
 <nav class="topnav">
   <div class="topnav-title">AI4EDA</div>
   <div class="topnav-links">
-    <a href="index.html">博文</a>
-    <a href="about.html">关于</a>
+    <a href="https://github.com/ZhijunLStudio">GitHub</a>
   </div>
 </nav>
 
 <header class="hero">
-  <div class="container">
-    <h1>AI4EDA</h1>
-    <p class="bio">AI驱动的电子设计自动化研究。探索 LLM Agent、贝叶斯优化、Skill 自进化在 IC 设计中的应用。</p>
-    <div class="links">
-      <a href="https://github.com/ZhijunLStudio">GitHub</a>
-      <a href="about.html">关于我</a>
-    </div>
+  <div class="avatar">◈</div>
+  <h1>AI<span>4</span>EDA</h1>
+  <p class="bio">
+    从<em>多模态训练与推理加速</em>走来，正在向<em>AI驱动的电子设计自动化</em>迈进。<br>
+    关注 Agent Harness 工程、Skill 自进化、以及更好的优化闭环如何让 IC 设计更自动。
+  </p>
+  <div class="links">
+    <a class="btn btn-primary" href="https://github.com/ZhijunLStudio">GitHub</a>
+    <a class="btn btn-ghost" href="#posts">博文 ↓</a>
   </div>
 </header>
 
-<div class="container">
+<div class="intro-cards">
+  <div class="intro-card">
+    <div class="ic-icon">⚙️</div>
+    <div class="ic-title">多模态训练加速</div>
+    <div class="ic-desc">大模型训练管线与推理优化</div>
+  </div>
+  <div class="intro-card">
+    <div class="ic-icon">🔧</div>
+    <div class="ic-title">AI4EDA</div>
+    <div class="ic-desc">LLM Agent + BO 混合决策，IC 设计自动化</div>
+  </div>
+  <div class="intro-card">
+    <div class="ic-icon">🧬</div>
+    <div class="ic-title">Harness Engineering</div>
+    <div class="ic-desc">自进化 Agent 执行层，Skill 越用越好</div>
+  </div>
+</div>
 
-<section style="border-top:none;">
-  <h2>博文</h2>
+<div class="posts-wrap" id="posts">
+  <div class="section-header">
+    <h2>博文</h2>
+    <span class="count">2 篇</span>
+  </div>
 
-  <ul class="post-list">
+  <a class="post-card" href="posts/harness-design-review.html">
+    <div class="pc-meta">
+      <span class="pc-date">2026-06-13</span>
+      <span class="tag tag-purple">综述</span>
+      <span class="tag tag-blue">Harness</span>
+    </div>
+    <div class="pc-title">Agent Harness 设计综述：17篇核心论文，看Harness如何自进化</div>
+    <div class="pc-desc">从系统边界、自动生成、失败修复、模块演化和长期可靠性五个方向，系统梳理近期 Harness 研究，提炼 7 条设计原则和 7 个反模式，给出面向 IC-Agent-OS 的具体工程建议。</div>
+  </a>
 
-    <a class="post-item" href="posts/harness-design-review.html">
-      <div class="post-date">2026-06-13</div>
-      <div class="post-title">Agent Harness 设计综述：17篇核心论文，看Harness如何自进化</div>
-      <div class="post-desc">从系统边界、自动生成、失败修复、模块演化和长期可靠性五个方向，系统梳理近期 Harness 研究，提炼7条设计原则和7个反模式。<span class="tag tag-purple">综述</span><span class="tag tag-blue">Harness</span></div>
-    </a>
-
-    <a class="post-item" href="posts/ic-agent-os-startup.html">
-      <div class="post-date">2026-06-13</div>
-      <div class="post-title">IC Agent OS 项目启动方案</div>
-      <div class="post-desc">基于 OpenCode + SkillOpt 调度器，5人团队6周交付，在 AnalogGym 的标准 benchmark 上构建通用 IC 设计优化引擎。<span class="tag tag-orange">项目</span><span class="tag tag-green">IC Agent OS</span></div>
-    </a>
-
-  </ul>
-</section>
+  <a class="post-card" href="posts/ic-agent-os-startup.html">
+    <div class="pc-meta">
+      <span class="pc-date">2026-06-13</span>
+      <span class="tag tag-orange">项目</span>
+      <span class="tag tag-green">IC Agent OS</span>
+    </div>
+    <div class="pc-title">IC Agent OS 项目启动方案</div>
+    <div class="pc-desc">基于 OpenCode + SkillOpt 调度器，在 AnalogGym 标准 benchmark 上构建通用 IC 设计优化引擎。统一架构调度，技能自进化，同一套工具和技能跑通 21 个电路全闭环。</div>
+  </a>
 
 </div>
 
 <footer class="footer">
-  © 2026 · 由 GitHub Pages 驱动
+  © 2026 · Powered by GitHub Pages
 </footer>
 
 </body>
