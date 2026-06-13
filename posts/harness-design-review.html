@@ -91,7 +91,7 @@ pre.code-small { font-size:11px; line-height:1.45; }
     <div class="tags">
       <span class="tag tag-green">系统边界 · 自动生成 · 失败修复 · 模块演化 · 长期可靠性</span>
       <span class="tag tag-blue">AS_OF: 2026-06-13</span>
-      <span class="tag tag-purple">含具体文件系统布局建议</span>
+      <span class="tag tag-purple">纯综述</span>
     </div>
   </div>
 </header>
@@ -262,97 +262,9 @@ pre.code-small { font-size:11px; line-height:1.45; }
   <p>对每轮仿真结果喂给 Optimizer 之前，检查四项 EFC 因子——信息性（与当前任务相关？）、有效性（来自仿真器输出非LLM推测？）、非冗余性（不重复已有发现？）、留存性（会被后续决策记住？）。任一因子为 0，该反馈事件贡献的有效计算接近 0。固定预算下改善反馈质量：<strong>成功率从 0.27→0.90</strong>。</p>
 </section>
 
-<!-- ════════════ 工程落地建议 ════════════ -->
-<section id="engineering">
-  <span class="sec-num">PART 3</span>
-  <h2>工程落地建议</h2>
-
-  <h3>3.1 OpenCode 运行时层面</h3>
-  <div class="highlight">
-    <strong>(a) 安装 Trace Provenance 机制</strong>（HarnessFix）：为每个 Tool 调用注入 span——记录从前面哪几步获取了输入证据、什么控制决策触发、产生了什么状态效果。<br><br>
-    <strong>(b) 构建隐藏的轨迹级审计通道</strong>（HarnessAudit）：为三个 Tool 声明权限矩阵——Adapter 只读外部仿真器配置+写入适配后参数；Optimizer 只读当前设计参数+写入优化候选（需门控）；State 只读所有文件+写入状态快照（受限路径）。<br><br>
-    <strong>(c) 分离 Agent 模型与 Evolver 模型</strong>（Harness Updating ≠ Benefit）：Forge/Refine 用最强模型（Claude 4 / Gemini 2.5 Pro）；Skill 更新用小模型（Qwen3.5 级，AutoHarness 证明了完全足够）；必须实现显式 Harness 加载触发 + 中程遵守检查点。
-  </div>
-
-  <h3>3.2 SkillOpt 调度器层面</h3>
-  <table>
-    <tr><th style="width:18%">机制</th><th>具体设定</th><th>来源</th></tr>
-    <tr><td><strong>文本学习率 L_t</strong></td><td>每步 ≤ 2-4 编辑，cosine decay。6 周 = 6 个 epoch</td><td>SkillOpt</td></tr>
-    <tr><td><strong>拒绝编辑缓冲</strong></td><td><code>rejected_edits.jsonl</code>，记录内容+epoch+被拒原因，下次提议前强制检查</td><td>SkillOpt</td></tr>
-    <tr><td><strong>Epoch 级元指导</strong></td><td>每周汇总接受/拒绝模式 → <code>meta_guidance.md</code>："缩小搜索空间边界在第2周使收敛失败-40%"</td><td>SkillOpt</td></tr>
-    <tr><td><strong>验证集划分</strong></td><td>21 电路 → 15 训练 + 3 验证（门控用）+ 3 保留测试（最终评估）</td><td>SkillOpt</td></tr>
-    <tr><td><strong>验证门控</strong></td><td>只在验证集（3电路）上评估；严格提升才接受；去掉门控 → SpreadsheetBench: 77.5→55.0</td><td>SkillOpt</td></tr>
-  </table>
-
-  <h3>3.3 文件系统布局</h3>
-  <div class="file-tree">project/
-├── harness/
-│   ├── tools/
-│   │   ├── adapter/
-│   │   │   ├── definition.py        # Tool 定义
-│   │   │   ├── schema.json           # 输入输出 schema
-│   │   │   └── CHANGELOG.md          # 每次修改附可证伪合约
-│   │   ├── optimizer/
-│   │   │   ├── definition.py
-│   │   │   ├── schema.json
-│   │   │   └── CHANGELOG.md
-│   │   └── state/
-│   │       ├── definition.py
-│   │       ├── schema.json
-│   │       └── CHANGELOG.md
-│   ├── skills/
-│   │   ├── forge_strategy.md         # SkillOpt 管理的技能文件
-│   │   ├── refine_diagnostics.md
-│   │   └── optimizer_search.md
-│   ├── orchestrator/
-│   │   ├── scheduler.py              # SkillOpt 调度器（编排器）
-│   │   ├── safety_gates.py           # 健康探测、回滚、门控
-│   │   └── meta_guidance.md          # epoch 级元指导
-│   ├── audit/
-│   │   ├── permission_policy.yaml    # 声明式权限矩阵
-│   │   └── trace_config.yaml         # trace provenance 配置
-│   └── memory/
-│       ├── operations.py             # write()/read() 原语
-│       └── probes.py                 # 写入保真度、检索精度、利用率探针
-├── iterations/
-│   └── {timestamp}_{circuit}/
-│       ├── forge/                    # 原则4：全轨迹保留
-│       ├── measure/
-│       └── refine/
-├── diagnostics/
-│   ├── efc_metrics.jsonl             # 每轮 EFC 四项因子评分
-│   ├── rejected_edits.jsonl          # SkillOpt 被拒缓冲
-│   └── contract_log.jsonl            # 可证伪合约记录
-└── benchmarks/
-    └── circuits/
-        ├── train/                    # 15 个训练电路
-        ├── val/                      # 3 个验证电路（SkillOpt 门控）
-        └── test/                     # 3 个保留测试电路</div>
-
-  <h3>3.4 三个 Tool 的关键约束</h3>
-  <table>
-    <tr><th style="width:14%">Tool</th><th>输出必须</th><th>输出禁止</th></tr>
-    <tr>
-      <td><strong>Adapter</strong></td>
-      <td>固定 schema 的 JSON + 确定性生成脚本；记录输入格式版本号 + 目标仿真器版本号</td>
-      <td>"仿真通过了" 式自然语言总结作为唯一输出</td>
-    </tr>
-    <tr>
-      <td><strong>Optimizer</strong></td>
-      <td>相对当前设计的可应用 diff；优化候选经编排器门控（参数在工艺允许范围？会产生已知无效拓扑？）；记录采样空间+算法+收敛状态</td>
-      <td>"把 W/L 改大一些" 式模糊建议</td>
-    </tr>
-    <tr>
-      <td><strong>State</strong></td>
-      <td>完整设计上下文（网表+参数+已验证性能指标），可从快照完全恢复实验；M-star式可编程接口</td>
-      <td>仅键值对存最终分数，丢掉中间状态</td>
-    </tr>
-  </table>
-</section>
-
 <!-- ════════════ 反模式 ════════════ -->
 <section id="antipatterns">
-  <span class="sec-num">PART 4</span>
+  <span class="sec-num">PART 3</span>
   <h2>绝对不要做的事（7 个反模式）</h2>
 
   <h3><span class="anti-num">1</span> 用自然语言代替结构化工件</h3>
