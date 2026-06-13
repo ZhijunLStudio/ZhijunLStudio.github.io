@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IC Agent OS 竞品与关联项目调研报告</title>
+<style>
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+:root {
+  --blue:#024BA1; --blue-dk:#013672; --blue-lt:#557DBF; --blue-bg:#EDF2FB;
+  --navy:#1A2A44; --orange:#ED7D31; --white:#FFFFFF;
+  --g50:#F8F9FA; --g100:#F1F3F5; --g200:#E9ECEF; --g300:#DEE2E6;
+  --g500:#6C757D; --g700:#495057; --g900:#212529;
+  --green:#2D8B4E; --red:#C0392B; --purple:#6A4C93;
+}
+html { scroll-behavior:smooth; }
+body { font-family:"Helvetica Neue",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; color:var(--g900); line-height:1.75; font-size:15px; background:var(--white); }
+.topnav { position:fixed; top:0; left:0; right:0; height:52px; background:var(--blue); display:flex; align-items:center; justify-content:space-between; padding:0 32px; z-index:100; box-shadow:0 1px 6px rgba(0,0,0,.15); }
+.topnav-title { color:var(--white); font-size:15px; font-weight:600; letter-spacing:.3px; }
+.topnav-links a { color:rgba(255,255,255,.8); text-decoration:none; font-size:12px; margin-left:10px; transition:color .2s; }
+.topnav-links a:hover { color:var(--white); }
+.container { max-width:960px; margin:0 auto; padding:0 24px; }
+.hero { padding:100px 0 46px; text-align:center; }
+.hero h1 { font-size:31px; font-weight:700; color:var(--blue); margin-bottom:8px; }
+.hero .subtitle { font-size:17px; color:var(--g500); margin-bottom:20px; }
+.hero .tags { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+.tag { display:inline-block; padding:4px 12px; border-radius:18px; font-size:13px; font-weight:500; }
+.tag-blue{ background:var(--blue-bg); color:var(--blue);} .tag-orange{ background:#FFF3E0; color:var(--orange);} .tag-green{ background:#E8F5E9; color:var(--green);}
+.tag-purple{ background:#F3E5F5; color:var(--purple);}
+section { padding:46px 0; border-top:1px solid var(--g200); }
+.sec-num { display:inline-block; font-size:13px; font-weight:700; color:var(--orange); letter-spacing:1px; margin-bottom:2px; }
+h2 { font-size:25px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+.section-lead { font-size:15px; color:var(--g500); margin-bottom:24px; }
+h3 { font-size:18px; font-weight:600; color:var(--blue); margin:24px 0 10px; }
+h4.inline-h { font-size:15px; font-weight:600; color:var(--navy); margin:18px 0 8px; }
+p { margin-bottom:10px; }
+.highlight { background:var(--blue-bg); border-left:4px solid var(--blue); border-radius:0 6px 6px 0; padding:12px 18px; margin:16px 0; font-size:14px; color:var(--navy); }
+.highlight strong { color:var(--blue); }
+.highlight.orange { border-left-color:var(--orange); background:#FFF8F0; } .highlight.orange strong { color:var(--orange); }
+.highlight.green { border-left-color:var(--green); background:#F2FBF5; } .highlight.green strong { color:var(--green); }
+.quote-banner { background:var(--navy); color:var(--white); border-radius:8px; padding:18px 24px; margin:18px 0; font-size:16px; font-style:italic; text-align:center; }
+.quote-banner strong { color:#FFD27F; font-style:normal; }
+table { width:100%; border-collapse:collapse; font-size:13px; margin:14px 0; }
+th { background:var(--blue); color:var(--white); padding:7px 10px; text-align:center; font-weight:600; font-size:12px; }
+td { padding:6px 10px; text-align:left; border-bottom:1px solid var(--g300); vertical-align:top; }
+tr:nth-child(even) td { background:var(--g50); }
+td.center,th.center { text-align:center; } td:first-child { font-weight:500; }
+.key-nums { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin:20px 0; }
+.key-num { text-align:center; padding:14px 20px; background:var(--blue-bg); border-radius:10px; min-width:108px; }
+.key-num .num { font-size:26px; font-weight:700; color:var(--blue); line-height:1.1; }
+.key-num .label { font-size:12px; color:var(--g500); margin-top:4px; }
+.card-row { display:flex; gap:14px; margin:14px 0; flex-wrap:wrap; }
+.card { flex:1; min-width:230px; border:1.5px solid var(--g300); border-radius:8px; padding:16px 18px; background:var(--white); }
+.card-blue{ border-color:var(--blue); background:var(--blue-bg);} .card-navy{ border-color:var(--navy); background:#F4F6FA;}
+.card-green{ border-color:var(--green); background:#F2FBF5;} .card-orange{ border-color:var(--orange); background:#FFF8F0;}
+.card-purple{ border-color:var(--purple); background:#F8F4FA;}
+.card h4 { font-size:15px; font-weight:600; margin-bottom:8px; }
+.card-blue h4{ color:var(--blue);} .card-green h4{ color:var(--green);} .card-orange h4{ color:var(--orange);} .card-purple h4{ color:var(--purple);}
+.card p,.card li { font-size:13px; color:var(--g700); } .card ul { padding-left:15px; } .card li { margin-bottom:3px; }
+pre.code { font-size:12px; line-height:1.55; background:var(--g50); color:var(--g900); padding:12px 14px; border-radius:6px; overflow-x:auto; margin:12px 0; border:1px solid var(--g200); }
+.footer { text-align:center; padding:36px 0; font-size:12px; color:var(--g500); border-top:1px solid var(--g200); }
+.gap-box { border:1.5px solid var(--orange); border-radius:8px; background:#FFF8F0; padding:14px 18px; margin:14px 0; }
+.gap-box h4 { color:var(--orange); font-size:15px; margin-bottom:8px; }
+.gap-box ul { padding-left:16px; font-size:13px; color:var(--g700); } .gap-box li { margin-bottom:4px; }
+/* stars */
+.stars { color:var(--orange); font-size:14px; letter-spacing:1px; }
+.star-dim { color:var(--g300); }
+.tag-pill { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
+.pill-v1 { background:#FDEAEA; color:var(--red);} .pill-v2 { background:#FFF3E0; color:var(--orange);} .pill-v31 { background:#E8F5E9; color:var(--green);}
+.pill-academic { background:#EDF2FB; color:var(--blue);}
+.pill-production { background:#E8F5E9; color:var(--green);}
+.pill-gap { background:#FFF3E0; color:var(--orange);}
+/* flow-stage */
+.flow-stages { margin:16px 0; }
+.flow-stage { border-left:3px solid var(--blue); padding:8px 14px; margin-bottom:6px; background:var(--g50); border-radius:0 6px 6px 0; }
+.flow-stage .fs-num { font-weight:700; color:var(--blue); font-size:12px; }
+.flow-stage .fs-name { font-weight:600; font-size:13px; }
+.flow-stage .fs-desc { font-size:12px; color:var(--g700); margin-top:2px; }
+/* diff table highlight */
+.diff-highlight { background:#FFFDE7; }
+td.url-cell { font-size:11px; font-family:ui-monospace,Menlo,monospace; word-break:break-all; }
+/* gap analysis */
+.gap-table td:last-child { font-size:12px; }
+@media (max-width:760px){
+  .card-row{ flex-direction:column; } .hero h1{ font-size:22px; }
+  .topnav-links{ display:none; }
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="topnav-title">李志军 · 博文</div>
+  <div class="topnav-links">
+    <a href="../index.html">← 返回</a>
+    <a href="#summary">总览</a>
+    <a href="#llm-analog">LLM·模拟</a>
+    <a href="#bo-sizing">BO·尺寸</a>
+    <a href="#gap">空白·机会</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1>IC Agent OS 竞品与关联项目调研报告</h1>
+    <p class="subtitle">面向 EDA 全领域的 AI 驱动 IC 设计优化引擎 · 从 9 个维度系统扫描 32 个竞品 / 关联仓库</p>
+    <div class="tags">
+      <span class="tag tag-green">9 个维度 · 32 个项目</span>
+      <span class="tag tag-blue">AS_OF: 2026-06-08</span>
+      <span class="tag tag-orange">含 GitHub 链接 · 论文引用</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ════════════ 总览 ════════════ -->
+<section id="summary" style="border-top:none;">
+  <span class="sec-num">EXECUTIVE SUMMARY</span>
+  <h2>调研总览</h2>
+  <p class="section-lead">基于 IC Agent OS v3.1 核心架构（Forge→Measure→Refine 优化循环、3 级状态管理、Adapter 协议、LLM+VLM 模型调度、拓扑获取 Pipeline、ngspice 先行），系统扫描 LLM 模拟电路设计、开源 EDA 框架、MCP+EDA、贝叶斯优化、VLM 视觉分析、轨迹记忆、国产 EDA、SPICE 自动化 9 个维度。</p>
+
+  <div class="key-nums">
+    <div class="key-num"><div class="num">32</div><div class="label">扫描项目总数</div></div>
+    <div class="key-num"><div class="num">9</div><div class="label">调研维度</div></div>
+    <div class="key-num"><div class="num">5</div><div class="label">工程空白机会</div></div>
+    <div class="key-num"><div class="num">7</div><div class="label">最高优先参考</div></div>
+    <div class="key-num"><div class="num">0</div><div class="label">完全同质竞品</div></div>
+  </div>
+
+  <div class="quote-banner">
+    <strong>核心结论：IC Agent OS 的 8 域全流程 × LLM+BO 混合决策 × 3 级状态管理 × Adapter 开放协议 × VLM 透明调度</strong><br>
+    这一组合在当前生态中是<strong>空白</strong>的。最接近的学术项目（AnalogSAGE）也仅覆盖模拟单域，且无 Adapter 生态概念。
+  </div>
+</section>
+
+<!-- ════════════ Part 1: LLM驱动的模拟电路设计 ════════════ -->
+<section id="llm-analog">
+  <span class="sec-num">PART 1 · 最直接竞品</span>
+  <h2>LLM 驱动的模拟电路设计</h2>
+  <p class="section-lead">这一类项目将 LLM 直接用于模拟电路拓扑生成、SPICE 网表产出、或器件尺寸优化——与 IC Agent OS Phase 1（模拟全流程）最直接相关。</p>
+
+  <h3>项目对比总表</h3>
+  <table>
+    <tr><th style="width:14%">项目</th><th style="width:13%">来源</th><th>核心方法</th><th style="width:13%">成熟度</th><th style="width:10%">相关度</th><th>与 IC Agent OS 差异</th></tr>
+    <tr>
+      <td><strong>AnalogSAGE</strong></td>
+      <td>arXiv 2512.22435<br><span style="font-size:11px;color:var(--g500);">2025.12</span></td>
+      <td>3 Agent（拓扑选择→精炼→BO参数优化）+ ngspice(SKY130) + 4层分层记忆</td>
+      <td><span class="tag-pill pill-academic">学术原型</span></td>
+      <td><span class="stars">★★★★★</span></td>
+      <td>仅模拟单域；无 Adapter 协议；无 VLM；记忆偏 Agent 组织而非状态管理工程实现</td>
+    </tr>
+    <tr>
+      <td><strong>AnalogXpert</strong></td>
+      <td>arXiv 2412.19824<br><span style="font-size:11px;color:var(--g500);">2024.12</span></td>
+      <td>LLM Agent：Block Selection + Connection (CoT+ICL) + Self-Proofreading</td>
+      <td><span class="tag-pill pill-academic">学术原型</span></td>
+      <td><span class="stars">★★★★</span><span class="star-dim">★</span></td>
+      <td>仅拓扑合成环节；不做全流程（无版图/MC/Corner）；无优化闭环</td>
+    </tr>
+    <tr>
+      <td><strong>SPICEPilot<br>+ LIMCA</strong></td>
+      <td>GLSVLSI 2025<br><span style="font-size:11px;color:var(--g500);">2025.06</span></td>
+      <td>Fine-tune-free LLM pipeline：SPICE生成 + IMC架构探索；GPT-4o & Claude</td>
+      <td><span class="tag-pill pill-academic">学术原型</span></td>
+      <td><span class="stars">★★★★</span><span class="star-dim">★</span></td>
+      <td>无全流程闭环；无状态管理；无 VLM；聚焦 IMC 场景</td>
+    </tr>
+    <tr>
+      <td><strong>ARCS</strong></td>
+      <td>GitHub<br><span style="font-size:11px;color:var(--g500);">2025</span></td>
+      <td>自回归 component-token 模型（~6.8M params）；GRPO RL + SPICE-in-the-loop</td>
+      <td><span class="tag-pill pill-academic">学术原型</span></td>
+      <td><span class="stars">★★★</span><span class="star-dim">★★</span></td>
+      <td>非 LLM 方案（专用小模型）；仅生成拓扑+值，不做全流程优化</td>
+    </tr>
+    <tr>
+      <td><strong>ADO-LLM</strong></td>
+      <td>ICCAD 2024<br><span style="font-size:11px;color:var(--g500);">2024</span></td>
+      <td>首个 LLM+BO 混合：LLM 注入先验约束 → BO 采样多样性</td>
+      <td><span class="tag-pill pill-academic">学术原型</span></td>
+      <td><span class="stars">★★★</span><span class="star-dim">★★</span></td>
+      <td>仅 BO 环节的 LLM 增强；非完整 Agent 系统</td>
+    </tr>
+    <tr>
+      <td><strong>GENIE-ASI</strong></td>
+      <td>MLCAD 2025<br><span style="font-size:11px;color:var(--g500);">Sony</span></td>
+      <td>Training-free LLM 从 SPICE 网表识别子电路结构</td>
+      <td><span class="tag-pill pill-academic">学术原型</span></td>
+      <td><span class="stars">★★</span><span class="star-dim">★★★</span></td>
+      <td>仅分析方向（网表→理解），非生成/优化方向</td>
+    </tr>
+  </table>
+
+  <h3>关键发现</h3>
+  <div class="card-row">
+    <div class="card card-orange">
+      <h4>共同局限</h4>
+      <ul>
+        <li>全部聚焦<strong>模拟单一域</strong>，无跨域视角</li>
+        <li>全部是<strong>学术原型</strong>，无工程化实现</li>
+        <li>无 Adapter 协议概念，工具<strong>硬编码</strong>绑定</li>
+        <li>不做版图、不做后仿真、不做 MC/Corner</li>
+        <li>无状态管理系统</li>
+      </ul>
+    </div>
+    <div class="card card-green">
+      <h4>IC Agent OS 的差异优势</h4>
+      <ul>
+        <li>覆盖<strong>模拟全流程 6 Stage</strong>（含版图/后仿/MC/Signoff）</li>
+        <li><strong>LLM + BO 混合决策</strong>：LLM 策略 + Stagnation→BO 切换</li>
+        <li><strong>3 级状态管理</strong>支撑跨 Stage 回跳</li>
+        <li><strong>Adapter 协议</strong>：仿真器可插拔</li>
+        <li><strong>VLM 透明调度</strong>：波形/版图/DRC 视觉分析</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="highlight green"><strong>最值得深入分析的竞品——AnalogSAGE：</strong>其 3 Agent 分层 + 4 层记忆架构与 IC Agent OS 设计理念高度一致。论文 arXiv:2512.22435 包含完整的记忆系统设计和 BO+SPICE 循环细节。但其"记忆"偏重 Agent 内部组织，IC Agent OS 强调 Snapshot/Delta/Action 作为<strong>所有操作的载体</strong>——这是关键理念差异。</div>
+</section>
+
+<!-- ════════════ Part 2: 开源EDA自动化框架 ════════════ -->
+<section id="oss-eda">
+  <span class="sec-num">PART 2 · 开源 EDA 框架</span>
+  <h2>开源 EDA 自动化框架</h2>
+  <p class="section-lead">这一类项目提供 EDA 工具链的自动化编排——与 IC Agent OS 的 Adapter 层和工具编排直接相关。它们展示了"如何统一调度多个 EDA 工具"的工程实践。</p>
+
+  <table>
+    <tr><th style="width:14%">项目</th><th style="width:13%">机构</th><th>核心能力</th><th style="width:10%">域</th><th style="width:10%">相关度</th><th>借鉴方向</th></tr>
+    <tr>
+      <td><strong>BAG3++</strong></td>
+      <td>UC Berkeley</td>
+      <td>Python 参数化模拟/混合信号电路生成；OptDesigner 优化循环；多 PDK 支持 (TSMC 65/28/16nm, GF 45nm, Intel 16, SKY130)</td>
+      <td>模拟</td>
+      <td><span class="stars">★★★★★</span></td>
+      <td>版图生成器框架；Python 脚本化全流程模式；参数化模板设计</td>
+    </tr>
+    <tr>
+      <td><strong>SiliconCompiler</strong></td>
+      <td>Zero ASIC</td>
+      <td>"芯片的 Make"：标准化 JSON Schema + DAG 流程图 + PDK 抽象层 + 远程云端编译 + 自动清单追踪</td>
+      <td>数字为主</td>
+      <td><span class="stars">★★★★★</span></td>
+      <td><strong>Adapter 协议设计</strong>直接参考其工具抽象层；PDK 摘要引擎参考其 PDK 对象模型</td>
+    </tr>
+    <tr>
+      <td><strong>OpenFASoC</strong></td>
+      <td>U. Michigan</td>
+      <td>Spec→GDSII 全开源 SoC 生成；温度传感器/LDO/Glayout 生成器；工具链: Magic→Netgen→Klayout→Yosys→OpenROAD→Xyce</td>
+      <td>模拟+数字</td>
+      <td><span class="stars">★★★★</span><span class="star-dim">★</span></td>
+      <td>全流程工具链集成参考；Glayout 参数化版图生成</td>
+    </tr>
+    <tr>
+      <td><strong>ALIGN</strong></td>
+      <td>开源社区</td>
+      <td>SPICE Netlist→GDS 自动版图生成；输入: SPICE，输出: GDSII+JSON</td>
+      <td>模拟</td>
+      <td><span class="stars">★★★</span><span class="star-dim">★★</span></td>
+      <td>Stage 3 版图生成环节可参考</td>
+    </tr>
+    <tr>
+      <td><strong>iEDA</strong></td>
+      <td>中科院计算所</td>
+      <td>国产开源数字 EDA 平台；11 个工具全覆盖 Netlist→GDS；已流片验证 110/55/28nm；子项目 AiEDA</td>
+      <td>数字</td>
+      <td><span class="stars">★★★</span><span class="star-dim">★★</span></td>
+      <td>国产工具链集成参考；AiEDA 的 AI+EDA 融合模式</td>
+    </tr>
+  </table>
+
+  <div class="highlight"><strong>SiliconCompiler 对 Adapter 协议设计的启示：</strong>其 PDK 对象模型（标准化 Python 类封装代工厂/节点/金属叠层/文件集）和工具 Schema（统一 JSON 描述工具能力）是 Adapter 协议最直接的工程参考。IC Agent OS 的 Adapter 可在此基础上增加<strong>结构化指标解析</strong>和<strong>收敛诊断</strong>两个维度——这是 SiliconCompiler 不覆盖的。</div>
+
+  <div class="highlight orange"><strong>BAG3++ 对版图生成策略的启示：</strong>BAG 的"工艺可移植 Generator"模式（Python 描述版图几何，与 PDK 解耦）已被 Blue Cheetah 商业化验证。IC Agent OS 的 Stage 3 版图生成可参考此模式，但需增加<strong>LLM 驱动的 DRC Self-Debug Loop</strong>——这是 BAG 不具备的。</div>
+</section>
+
+<!-- ════════════ Part 3: LLM Agent + EDA流自动化 ════════════ -->
+<section id="agent-eda">
+  <span class="sec-num">PART 3 · LLM Agent + EDA</span>
+  <h2>LLM Agent + EDA 流自动化</h2>
+  <p class="section-lead">这一类项目用 LLM Agent 驱动 EDA 工具流——与 IC Agent OS 的"Claude Code + MCP Runtime"落地策略直接相关。</p>
+
+  <table>
+    <tr><th style="width:14%">项目</th><th style="width:13%">机构</th><th>核心方法</th><th style="width:8%">域</th><th style="width:10%">相关度</th><th>与 IC Agent OS 差异</th></tr>
+    <tr>
+      <td><strong>AutoEDA</strong></td>
+      <td>Duke + UMD</td>
+      <td><strong>MCP-based 微服务 LLM Agent</strong> → RTL-to-GDSII 全自动；4 层架构（NL→Agent→MCP Server→EDA 微服务）；9.9x 准确率，Token -97%</td>
+      <td>数字</td>
+      <td><span class="stars">★★★★★</span></td>
+      <td>数字流程、无模拟；按指令执行而非<strong>指标驱动迭代</strong>；无优化闭环</td>
+    </tr>
+    <tr>
+      <td><strong>ChipNeMo</strong></td>
+      <td>NVIDIA</td>
+      <td>领域自适应 LLM（芯片设计文档微调）；RTL 生成辅助、Bug 分析</td>
+      <td>数字</td>
+      <td><span class="stars">★★★★</span><span class="star-dim">★</span></td>
+      <td><strong>辅助型工具（Copilot）</strong>，非自主优化 Agent；无 SPICE 层次</td>
+    </tr>
+    <tr>
+      <td><strong>ORFS-agent</strong></td>
+      <td>MLCAD 2025</td>
+      <td>LLM 驱动的迭代优化器用于 RTL-to-GDS flow；LLM+批量BO混合</td>
+      <td>数字</td>
+      <td><span class="stars">★★★</span><span class="star-dim">★★</span></td>
+      <td>仅数字流程；非全流程优化</td>
+    </tr>
+    <tr>
+      <td><strong>DRC-Coder</strong></td>
+      <td>NVIDIA</td>
+      <td>LLM 自主 Agent 自动生成 DRC Checker 代码</td>
+      <td>通用</td>
+      <td><span class="stars">★★★</span><span class="star-dim">★★</span></td>
+      <td>仅 DRC 代码生成环节；IC Agent OS 的 Self-Debug Loop 可借鉴</td>
+    </tr>
+    <tr>
+      <td><strong>Ralph Loop<br>Optimizer</strong></td>
+      <td>GitHub</td>
+      <td>通用 AI 驱动优化循环：AI 变更→评估→记录→迭代；适用于任何可评估代码库</td>
+      <td>通用</td>
+      <td><span class="stars">★★★</span><span class="star-dim">★★</span></td>
+      <td>通用框架，非 EDA 专用；可作为 F→M→R 循环的抽象参考</td>
+    </tr>
+  </table>
+
+  <div class="highlight green"><strong>AutoEDA 对 IC Agent OS 落地策略的启示：</strong>其 MCP-based 微服务架构（每个 EDA Stage 是独立 FastAPI 微服务，MCP 做标准化通信）直接验证了"LLM Agent + MCP + EDA 工具"的可行性。IC Agent OS 的差异在于：AutoEDA 是按<strong>指令执行</strong>（"请跑综合"），IC Agent OS 是按<strong>指标驱动迭代</strong>（"gain 差 11dB，调 M1.W 直到满足"）。</div>
+</section>
+
+<!-- ════════════ Part 4: MCP + EDA ════════════ -->
+<section id="mcp-eda">
+  <span class="sec-num">PART 4 · MCP + EDA</span>
+  <h2>MCP 协议 + EDA 工具生态</h2>
+  <p class="section-lead">MCP（Model Context Protocol）正在成为 LLM 与 EDA 工具之间的标准通信协议。IC Agent OS 的 Runtime SDK 通过 MCP 暴露给 Claude Code，这一类项目直接验证了这条技术路线。</p>
+
+  <table>
+    <tr><th style="width:16%">项目</th><th style="width:12%">GitHub</th><th>封装的 EDA 工具</th><th style="width:10%">定位</th><th>与 IC Agent OS 关系</th></tr>
+    <tr>
+      <td><strong>mcp-EDA</strong></td>
+      <td class="url-cell">github.com/punkpeye/mcp-EDA</td>
+      <td>Yosys / Icarus Verilog / GTKWave / OpenLane / KLayout</td>
+      <td>数字</td>
+      <td>最接近的 MCP+EDA 参考实现；但仅为<strong>工具包装层</strong>，无优化能力</td>
+    </tr>
+    <tr>
+      <td><strong>AutoEDA<br>MCP-Server</strong></td>
+      <td class="url-cell">github.com/AndyLu666/MCP-EDA-Server</td>
+      <td>Synthesis / Floorplan / CTS / Routing（商业工具后端）</td>
+      <td>数字</td>
+      <td>MCP→微服务架构参考；IC Agent OS 可复用其 MCP 协议设计模式</td>
+    </tr>
+    <tr>
+      <td><strong>KiCAD-MCP<br>-Server</strong></td>
+      <td class="url-cell">github.com/mixelpixx/KiCAD-MCP-Server</td>
+      <td>KiCAD（schematic / PCB / DRC / 自动布线）</td>
+      <td>PCB</td>
+      <td>PCB 非 IC；但 MCP+设计工具交互模式可参考</td>
+    </tr>
+    <tr>
+      <td><strong>vivado-mcp<br>-agent</strong></td>
+      <td class="url-cell">himcp.ai</td>
+      <td>Vivado 2025.2（综合/布局布线/bitstream/硬件编程）</td>
+      <td>FPGA</td>
+      <td>FPGA 非 ASIC；确定性流程的安全门控模式可借鉴</td>
+    </tr>
+  </table>
+
+  <div class="highlight"><strong>MCP 生态正在爆发：</strong>2025 年是 MCP 在 EDA 领域的突破年——从 PCB（KiCAD）到 ASIC（OpenLane）到 FPGA（Vivado）均有 MCP Server 覆盖。但<strong>尚无任何一个 MCP Server 覆盖模拟仿真（ngspice/Xyce）</strong>——这是 IC Agent OS 的 Adapter 协议可以填补的空白。</div>
+</section>
+
+<!-- ════════════ Part 5: 贝叶斯优化 + 模拟电路尺寸 ════════════ -->
+<section id="bo-sizing">
+  <span class="sec-num">PART 5 · BO + 电路尺寸</span>
+  <h2>贝叶斯优化 + 模拟电路尺寸</h2>
+  <p class="section-lead">IC Agent OS 的 Refine 阶段在 LLM 停滞时切换到 BO。这一类项目代表了当前模拟电路自动尺寸优化的 SOTA 算法，是 BO 模块的直接技术参考。</p>
+
+  <table>
+    <tr><th style="width:14%">项目</th><th style="width:13%">来源</th><th>核心算法</th><th>关键结果</th><th style="width:10%">开源</th><th>借鉴方向</th></tr>
+    <tr>
+      <td><strong>RoSE /<br>RoSE-Opt</strong></td>
+      <td>DAC'23<br>TCAD'24</td>
+      <td>BO（粗搜索）+ RL/DDPG/PPO（精调）；知识注入；PVT 感知</td>
+      <td>—</td>
+      <td>✅ GitHub</td>
+      <td>BO+RL 混合优化算法；PVT 鲁棒性设计</td>
+    </tr>
+    <tr>
+      <td><strong>PVTSizing</strong></td>
+      <td>DAC 2024<br>北京大学</td>
+      <td>TuRBO（Trust Region BO）+ Multi-task RL；批量并行 PVT Corner</td>
+      <td>1.9x-8.8x 样本效率<br>1.6x-9.8x 时间效率</td>
+      <td>❌</td>
+      <td>PVT Corner 并行优化策略；批量采样设计</td>
+    </tr>
+    <tr>
+      <td><strong>Post-Layout<br>BO Sizing</strong></td>
+      <td>Sci. China 2024<br>北大/UT Austin</td>
+      <td>耦合 BO（Bayes-α 前仿 + Bayes-β 后仿双 GP）；MAGICAL 版图集成</td>
+      <td>>20% 后仿性能提升</td>
+      <td>❌</td>
+      <td><strong>Stage 4 后仿真优化直接参考</strong>；双保真度 GP 模型</td>
+    </tr>
+    <tr>
+      <td><strong>Latent Space<br>BO</strong></td>
+      <td>ISEDA 2024<br>复旦大学</td>
+      <td>VAE 降维 → 潜空间 BO；处理高维（18-59 变量）</td>
+      <td>23%-73% 性能提升</td>
+      <td>❌</td>
+      <td>高维电路（大量器件）的 BO 降维策略</td>
+    </tr>
+  </table>
+
+  <h3>通用 BO 框架（可直接集成）</h3>
+  <table>
+    <tr><th style="width:14%">框架</th><th style="width:14%">维护方</th><th>特点</th><th>IC Agent OS 适用场景</th></tr>
+    <tr>
+      <td><strong>BoTorch + Ax</strong></td>
+      <td>Meta (PyTorch)</td>
+      <td>多目标、多保真度、约束、异步、自定义采集函数</td>
+      <td><strong>首推</strong>——多保真度支持（高/低精度 SPICE 切换）；PyTorch 原生，易于集成</td>
+    </tr>
+    <tr>
+      <td><strong>Optuna</strong></td>
+      <td>Preferred Networks</td>
+      <td>多目标（NSGA-II/TPE）、剪枝、可视化；~12k Stars</td>
+      <td>轻量级替代方案；TPE 适合离散+连续混合变量</td>
+    </tr>
+    <tr>
+      <td><strong>Hyperopt</strong></td>
+      <td>开源社区</td>
+      <td>TPE、随机搜索；~7.4k Stars</td>
+      <td>简单场景备选，功能性弱于 BoTorch</td>
+    </tr>
+  </table>
+
+  <div class="highlight orange"><strong>BO 模块的关键决策：</strong>模拟电路的器件参数是混合变量（连续 W/L + 离散 finger/Multiplier）。TuRBO（Trust Region BO）在混合变量场景下效果好于标准 GP-BO。建议 IC Agent OS 的 BO 模块基于 BoTorch+Ax，并集成 TuRBO 策略处理离散变量。</div>
+</section>
+
+<!-- ════════════ Part 6: VLM ════════════ -->
+<section id="vlm">
+  <span class="sec-num">PART 6 · VLM + 电路视觉</span>
+  <h2>VLM 视觉 + 电路分析</h2>
+  <p class="section-lead">IC Agent OS 的 VLM Subagent 负责波形分析、版图检查、DRC 截图分析、眼图分析等视觉任务。这一类项目代表了 VLM 在电路设计中的应用前沿。</p>
+
+  <table>
+    <tr><th style="width:16%">方向</th><th style="width:14%">代表性工作</th><th>方法</th><th>成熟度</th><th>IC Agent OS 可借鉴</th></tr>
+    <tr>
+      <td><strong>原理图→网表</strong></td>
+      <td>Masala-CHAI<br>(NYU, 2024)</td>
+      <td>GPT-4o + YOLOv8 元件检测 + Deep Hough Transform 连线检测 → SPICE 网表</td>
+      <td>学术原型</td>
+      <td>Stage 1 拓扑获取：从论文/资料中的原理图图像提取网表</td>
+    </tr>
+    <tr>
+      <td><strong>DRC 违例修复</strong></td>
+      <td>DRC-Coder<br>(NVIDIA, 2025)</td>
+      <td>LLM Agent 读 DRC 违例 → 自动生成修复代码</td>
+      <td>学术原型</td>
+      <td>Stage 3 Self-Debug Loop 的 DRC 修复环节</td>
+    </tr>
+    <tr>
+      <td><strong>电路图理解</strong></td>
+      <td>ICCV 2025<br>Workshop</td>
+      <td>VLM Near Sight Correction 增强电路图理解</td>
+      <td>早期研究</td>
+      <td>VLM 原理图分析的精度提升策略</td>
+    </tr>
+  </table>
+
+  <div class="highlight green"><strong>VLM 方向的核心空白：</strong>目前尚无专门的"波形图→结构化指标"VLM 工具，也无"版图→匹配质量评估"的 VLM 方案。IC Agent OS 的 VLM Subagent 设计（强 Schema 约束返回结构化 JSON，而非自然语言描述）在 EDA 领域是<strong>首创的工程化方案</strong>。</div>
+</section>
+
+<!-- ════════════ Part 7: 轨迹记忆 ════════════ -->
+<section id="trajectory">
+  <span class="sec-num">PART 7 · 轨迹记忆</span>
+  <h2>经验回放 / 轨迹记忆</h2>
+  <p class="section-lead">IC Agent OS 的 3 级状态管理（Snapshot/Delta/Action）是优化循环的载体。这一类项目代表了设计经验记录与复用的 SOTA。</p>
+
+  <table>
+    <tr><th style="width:14%">项目</th><th style="width:13%">来源</th><th>记忆机制</th><th style="width:12%">与 IC Agent OS 3 级状态对比</th></tr>
+    <tr>
+      <td><strong>AnalogSAGE<br>StratifiedMemory</strong></td>
+      <td>arXiv 2512.22435<br>2025.12</td>
+      <td>4 层：进化记忆（全局跨任务）→ 内省优化（中期任务内）→ 阶段上下文（短期每次迭代）→ 外部数据库（拓扑库+RAG）</td>
+      <td>最接近的参考。IC Agent OS 差异：<strong>状态是操作载体</strong>（Snapshot→Diff→Action→Rollback），而非仅 Agent 记忆组织。更偏工程实现而非认知架构。</td>
+    </tr>
+    <tr>
+      <td><strong>EDiSon</strong></td>
+      <td>NeurIPS 2024</td>
+      <td>Design Memory + 自适应探索/回放</td>
+      <td>通用设计记忆框架，非 EDA 专用；回放机制可参考</td>
+    </tr>
+    <tr>
+      <td><strong>PPAAS</strong></td>
+      <td>2025</td>
+      <td>保守事后经验回放 (CHER) 用于 PVT 感知模拟尺寸</td>
+      <td>经验回放策略可参考；1.6x 样本效率提升验证了记忆的价值</td>
+    </tr>
+    <tr>
+      <td><strong>AMSnet-KG</strong></td>
+      <td>ACM TODAES<br>2025-2026</td>
+      <td>知识图谱数据集；KG-RAG 检索子电路→组合拓扑→BO 尺寸→迭代</td>
+      <td>拓扑库的 KG 组织方式可参考；RAG 检索策略</td>
+    </tr>
+  </table>
+
+  <div class="highlight"><strong>3 级状态管理的差异化定位：</strong>所有现有方案把"记忆"当作 Agent 的认知组件。IC Agent OS 把状态管理定位为<strong>所有操作的载体</strong>——Snapshot 是内容寻址的不可变快照（结构共享），Delta 是对象级+指标级+因果链的语义 Diff，Action 是不可变的操作记录。这个定位在当前生态中<strong>没有先例</strong>。</div>
+</section>
+
+<!-- ════════════ Part 8: 国产 EDA ════════════ -->
+<section id="cn-eda">
+  <span class="sec-num">PART 8 · 国产 EDA</span>
+  <h2>中国 EDA 生态</h2>
+  <p class="section-lead">IC Agent OS 的 Adapter 协议目标之一是撬动国产 EDA 生态。理解国产厂商的能力版图和 AI 布局，是制定 Adapter 策略的前提。</p>
+
+  <table>
+    <tr><th style="width:12%">厂商</th><th style="width:10%">上市</th><th style="width:14%">核心赛道</th><th>AI 布局</th><th>Adapter 接入价值</th></tr>
+    <tr>
+      <td><strong>华大九天<br>Empyrean</strong></td>
+      <td>301269.SZ</td>
+      <td>全流程模拟 EDA；FPD EDA 全球领先</td>
+      <td>AI 自动布局布线（28nm 效率+30%）；GPU 加速 RF 仿真器 ALPSRF (10x)；收购芯和半导体 (Chiplet)</td>
+      <td><strong>最高</strong>——模拟全流程工具最完整；若其仿真器通过 Adapter 接入，覆盖国内最大用户群</td>
+    </tr>
+    <tr>
+      <td><strong>概伦电子<br>Primarius</strong></td>
+      <td>688206.SH</td>
+      <td>器件建模 + 电路仿真；DTCO 方法论</td>
+      <td>Transformer AI 器件建模（2周→24h）；NanoSpice 获 Samsung 3nm GAA 认证</td>
+      <td><strong>高</strong>——NanoSpice 是 ngspice 之外最具潜力的仿真器 Adapter 目标</td>
+    </tr>
+    <tr>
+      <td><strong>广立微<br>Semitronix</strong></td>
+      <td>301095.SZ</td>
+      <td>良率管理 + WAT 测试</td>
+      <td>AI 良率分析 QuickRoot（准确率 99.3%）；收购 LUCEDA (硅光 EDA)</td>
+      <td><strong>中</strong>——良率分析可增强 Stage 5 MC/Corner 优化</td>
+    </tr>
+  </table>
+
+  <h3>国产 EDA 与 IC Agent OS 的战略协同</h3>
+  <div class="card-row">
+    <div class="card card-orange">
+      <h4>国产厂商的痛点</h4>
+      <ul>
+        <li>先进节点覆盖不足（&lt;5nm 覆盖 &lt;30%）</li>
+        <li>数字后端工具替代率 &lt;20%</li>
+        <li>PDK 生态严重依赖国际三大厂</li>
+        <li>用户习惯难以迁移</li>
+        <li>AI 能力分散，缺乏统一的优化框架</li>
+      </ul>
+    </div>
+    <div class="card card-green">
+      <h4>IC Agent OS 提供的价值</h4>
+      <ul>
+        <li><strong>不替代工具，增强工具</strong>——降低用户迁移阻力</li>
+        <li>Adapter 协议让国产工具获得<strong>AI 优化能力</strong></li>
+        <li>IC Agent OS 成为国产工具的<strong>用户获取渠道</strong></li>
+        <li>优化闭环积累的轨迹数据反哺工具改进</li>
+        <li>开源社区降低信任门槛</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ Part 9: SPICE 自动化库 ════════════ -->
+<section id="spice-lib">
+  <span class="sec-num">PART 9 · SPICE Python 库</span>
+  <h2>SPICE Python 自动化库</h2>
+  <p class="section-lead">这一类项目提供 SPICE 仿真器的 Python 封装——是 ngspice Adapter 实现的最直接代码参考。</p>
+
+  <table>
+    <tr><th style="width:14%">库</th><th style="width:14%">安装方式</th><th>支持的仿真器</th><th>关键特性</th><th>IC Agent OS 借鉴</th></tr>
+    <tr>
+      <td><strong>PySpice</strong></td>
+      <td>pip install PySpice</td>
+      <td>ngspice, Xyce</td>
+      <td>CFFI 绑定共享库；Pythonic 电路定义 API；NumPy 集成；KiCad 联动</td>
+      <td>ngspice 绑定的工程实现参考</td>
+    </tr>
+    <tr>
+      <td><strong>spicelib</strong></td>
+      <td>pip install spicelib</td>
+      <td>LTspice, Ngspice, QSPICE, Xyce</td>
+      <td>SimRunner / SpiceEditor / RawRead / SimStepper；MC/最坏情况分析</td>
+      <td><strong>多仿真器抽象层</strong>的最佳参考；SimStepper 增量仿真模式</td>
+    </tr>
+    <tr>
+      <td><strong>PyOpus</strong></td>
+      <td>—</td>
+      <td>Ngspice, Xyce, SpiceOpus, Spectre, HSPICE</td>
+      <td>最全面良率分析工具；MPI 并行化；统一多仿真器接口</td>
+      <td>商业化仿真器（Spectre/HSPICE）Adapter 的接口参考</td>
+    </tr>
+    <tr>
+      <td><strong>kupicelib</strong></td>
+      <td>pip install kupicelib</td>
+      <td>Ngspice, LTspice, QSPICE, Xyce</td>
+      <td>MC/最坏情况工具包</td>
+      <td>轻量级替代方案</td>
+    </tr>
+  </table>
+
+  <div class="highlight orange"><strong>ngspice Adapter 实现建议：</strong>基于 PySpice 的 ngspice CFFI 绑定方式（避免 subprocess 调用的性能损耗），叠加 spicelib 的多仿真器抽象模式（为后续 Xyce/Spectre Adapter 预留接口），自研<strong>收敛诊断模块</strong>（解析 ngspice 错误日志→定位不收敛根因→建议修正选项）——这是所有现有库都不具备的能力。</div>
+</section>
+
+<!-- ════════════ 核心发现 ════════════ -->
+<section id="gap">
+  <span class="sec-num">CROSS-CUTTING · 综合分析</span>
+  <h2>核心发现与差异分析</h2>
+
+  <h3>IC Agent OS vs 所有现有方案：逐维对比</h3>
+  <table>
+    <tr><th style="width:16%">维度</th><th style="width:28%">所有现有方案的特征</th><th style="width:28%">IC Agent OS 的差异</th><th>是否空白</th></tr>
+    <tr>
+      <td><strong>覆盖范围</strong></td>
+      <td>单域（模拟 OR 数字），且通常只做部分环节（如仅拓扑、仅尺寸）</td>
+      <td><strong>8 域全流程</strong>，每个域覆盖从设计到 Signoff 的完整 Stage</td>
+      <td><span class="tag-pill pill-gap">空白</span></td>
+    </tr>
+    <tr>
+      <td><strong>决策方式</strong></td>
+      <td>固定脚本（SiliconCompiler）OR 单一算法（BO-only / RL-only）</td>
+      <td><strong>LLM+BO 混合决策</strong>：LLM 主导策略推理，Stagnation→BO 接管数值搜索</td>
+      <td><span class="tag-pill pill-gap">空白</span></td>
+    </tr>
+    <tr>
+      <td><strong>状态管理</strong></td>
+      <td>文件 Git 版本（BAG）OR 无状态（所有学术原型）OR Agent 内部记忆（AnalogSAGE）</td>
+      <td><strong>3 级结构化状态</strong>：Snapshot（不可变快照）→ Delta（对象+指标+因果链 Diff）→ Action（不可变操作记录）</td>
+      <td><span class="tag-pill pill-gap">空白</span></td>
+    </tr>
+    <tr>
+      <td><strong>工具关系</strong></td>
+      <td>硬编码绑定特定工具（AnalogSAGE→ngspice；AutoEDA→商业工具）</td>
+      <td><strong>Adapter 开放协议</strong>：~500 行代码接入任何仿真器/版图工具/验证工具</td>
+      <td><span class="tag-pill pill-gap">空白</span></td>
+    </tr>
+    <tr>
+      <td><strong>视觉能力</strong></td>
+      <td>无视觉能力（多数）OR 独立 VLM pipeline（Masala-CHAI）</td>
+      <td><strong>Language×VLM 透明调度</strong>：主模型声明"需要看图"→Runtime 自动路由→结构化 JSON 回注</td>
+      <td><span class="tag-pill pill-gap">空白</span></td>
+    </tr>
+    <tr>
+      <td><strong>生态策略</strong></td>
+      <td>封闭生态（绑定特定工具链）OR 无生态概念</td>
+      <td><strong>生态飞轮</strong>：ngspice 先行验证→用户积累→国产厂商看到用户量→Adapter 接入→更多用户</td>
+      <td><span class="tag-pill pill-gap">空白</span></td>
+    </tr>
+    <tr>
+      <td><strong>闭环深度</strong></td>
+      <td>单 Stage（仅前仿优化）OR 单方向流程（RTL→GDS，不回头）</td>
+      <td><strong>6 Stage 跨阶段回跳</strong>：后仿指标退化→回 Stage 2 改 Sizing OR Stage 3 改版图</td>
+      <td><span class="tag-pill pill-gap">空白</span></td>
+    </tr>
+  </table>
+
+  <h3>工程空白：5 个可优先突破的方向</h3>
+  <div class="flow-stages">
+    <div class="flow-stage">
+      <span class="fs-num">Gap 1</span>
+      <span class="fs-name">SPICE 收敛诊断库</span>
+      <div class="fs-desc">无开源方案系统性地诊断 SPICE 不收敛原因（振荡/高阻抗节点/浮空节点/Gmin stepping 失败）。ngspice 仅给出错误码，不做根因分析。IC Agent OS 的 Self-Debug Loop 强依赖此能力。</div>
+    </div>
+    <div class="flow-stage">
+      <span class="fs-num">Gap 2</span>
+      <span class="fs-name">SPICE 模型分析器</span>
+      <div class="fs-desc">无开源 Python 库解析 BSIM/PSP 模型参数、提取 Vth/gm/Idsat 等关键设计参数、进行跨 PDK 对比。PDK 摘要引擎需要此能力。</div>
+    </div>
+    <div class="flow-stage">
+      <span class="fs-num">Gap 3</span>
+      <span class="fs-name">统一模拟 EDA 工作流引擎</span>
+      <div class="fs-desc">无将 Xschem→Ngspice→Magic→Netgen→KLayout 全工具链串联 + 经验追踪 + BO 回环的平台。SiliconCompiler 覆盖数字但不覆盖模拟。</div>
+    </div>
+    <div class="flow-stage">
+      <span class="fs-num">Gap 4</span>
+      <span class="fs-name">设计轨迹数据库</span>
+      <div class="fs-desc">AnalogSAGE 的 4 层记忆是最接近的设计，但仍为学术原型。无生产级的"设计决策→结果→经验"持久化与检索系统。</div>
+    </div>
+    <div class="flow-stage">
+      <span class="fs-num">Gap 5</span>
+      <span class="fs-name">LLM+BO 工程化混合框架</span>
+      <div class="fs-desc">ADO-LLM/ORFS-agent 验证了 LLM+BO 混合的有效性，但均为学术一次性脚本。无工程化的"LLM 主决策→Stagnation 检测→BO 自动接管→结果回注 LLM 上下文"框架。</div>
+    </div>
+  </div>
+
+  <h3>Harness 实现的参考优先级</h3>
+  <table>
+    <tr><th style="width:6%">优先级</th><th style="width:15%">参考项目</th><th>借鉴方向</th><th>具体抓手</th></tr>
+    <tr>
+      <td><strong>P0</strong></td>
+      <td><strong>AnalogSAGE</strong></td>
+      <td>Agent 分层架构 + 记忆系统 + BO+SPICE 循环</td>
+      <td>读论文 arXiv:2512.22435 全文；分析其 3 Agent 通信协议和 4 层记忆数据模型</td>
+    </tr>
+    <tr>
+      <td><strong>P0</strong></td>
+      <td><strong>SiliconCompiler</strong></td>
+      <td>工具 Adapter 抽象 + PDK 对象模型 + DAG 流程图引擎</td>
+      <td>读其 PDK 类和 Tool Schema 源码；设计 IC Agent OS Adapter 协议 v1.0</td>
+    </tr>
+    <tr>
+      <td><strong>P1</strong></td>
+      <td><strong>PySpice + spicelib</strong></td>
+      <td>ngspice 绑定方式 + 多仿真器抽象层</td>
+      <td>基于 PySpice CFFI 方式封装 ngspice；定义 SimulatorAdapter Protocol 接口</td>
+    </tr>
+    <tr>
+      <td><strong>P1</strong></td>
+      <td><strong>AutoEDA</strong></td>
+      <td>MCP + EDA 微服务架构</td>
+      <td>读其 MCP Server 实现；设计 IC Agent OS 的 MCP Runtime SDK</td>
+    </tr>
+    <tr>
+      <td><strong>P1</strong></td>
+      <td><strong>RoSE</strong></td>
+      <td>BO+RL 混合优化算法</td>
+      <td>参考其 BO→RL 切换策略；设计 Stagnation 检测和 BO 接管机制</td>
+    </tr>
+    <tr>
+      <td><strong>P2</strong></td>
+      <td><strong>BAG3++</strong></td>
+      <td>Python 参数化版图生成框架</td>
+      <td>参考其工艺可移植 Generator 模式；设计 Stage 3 版图生成流程</td>
+    </tr>
+    <tr>
+      <td><strong>P2</strong></td>
+      <td><strong>OpenFASoC + ALIGN</strong></td>
+      <td>全流程工具链集成 + 自动版图</td>
+      <td>参考其 Makefile→Python 流程编排；ALIGN 的 SPICE→GDS 可作版图生成备选</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ════════════ 附录 ════════════ -->
+<section id="appendix">
+  <span class="sec-num">APPENDIX</span>
+  <h2>项目索引与链接汇总</h2>
+
+  <table>
+    <tr><th style="width:4%">#</th><th style="width:16%">项目名</th><th>链接</th><th style="width:10%">类型</th><th style="width:8%">相关度</th></tr>
+    <tr><td>1</td><td>AnalogSAGE</td><td class="url-cell">arxiv.org/abs/2512.22435</td><td>论文</td><td>★★★★★</td></tr>
+    <tr><td>2</td><td>AnalogXpert</td><td class="url-cell">arxiv.org/abs/2412.19824</td><td>论文</td><td>★★★★☆</td></tr>
+    <tr><td>3</td><td>SPICEPilot + LIMCA</td><td class="url-cell">dl.acm.org/doi/10.1145/3716368.3735276</td><td>论文</td><td>★★★★☆</td></tr>
+    <tr><td>4</td><td>ARCS</td><td class="url-cell">github.com/tusharpathaknyu/ARCS</td><td>GitHub</td><td>★★★☆☆</td></tr>
+    <tr><td>5</td><td>ADO-LLM</td><td class="url-cell">ICCAD 2024</td><td>论文</td><td>★★★☆☆</td></tr>
+    <tr><td>6</td><td>BAG3++</td><td class="url-cell">github.com/ucb-art/bag</td><td>GitHub</td><td>★★★★★</td></tr>
+    <tr><td>7</td><td>SiliconCompiler</td><td class="url-cell">github.com/siliconcompiler/siliconcompiler</td><td>GitHub</td><td>★★★★★</td></tr>
+    <tr><td>8</td><td>OpenFASoC</td><td class="url-cell">github.com/idea-fasoc/OpenFASOC</td><td>GitHub</td><td>★★★★☆</td></tr>
+    <tr><td>9</td><td>ALIGN</td><td class="url-cell">github.com/ALIGN-analoglayout/ALIGN-public</td><td>GitHub</td><td>★★★☆☆</td></tr>
+    <tr><td>10</td><td>iEDA</td><td class="url-cell">github.com/OSCC-Project/iEDA</td><td>GitHub</td><td>★★★☆☆</td></tr>
+    <tr><td>11</td><td>AutoEDA</td><td class="url-cell">github.com/AndyLu666/MCP-EDA-Server</td><td>GitHub</td><td>★★★★★</td></tr>
+    <tr><td>12</td><td>ChipNeMo</td><td class="url-cell">arxiv.org/abs/2311.00176</td><td>论文</td><td>★★★★☆</td></tr>
+    <tr><td>13</td><td>ORFS-agent</td><td class="url-cell">MLCAD 2025</td><td>论文</td><td>★★★☆☆</td></tr>
+    <tr><td>14</td><td>DRC-Coder</td><td class="url-cell">arxiv.org/abs/2412.05311</td><td>论文</td><td>★★★☆☆</td></tr>
+    <tr><td>15</td><td>mcp-EDA</td><td class="url-cell">github.com/punkpeye/mcp-EDA</td><td>GitHub</td><td>★★★★☆</td></tr>
+    <tr><td>16</td><td>KiCAD-MCP-Server</td><td class="url-cell">github.com/mixelpixx/KiCAD-MCP-Server</td><td>GitHub</td><td>★★★☆☆</td></tr>
+    <tr><td>17</td><td>RoSE</td><td class="url-cell">github.com/xz-group/RoSE</td><td>GitHub</td><td>★★★★☆</td></tr>
+    <tr><td>18</td><td>PVTSizing</td><td class="url-cell">DAC 2024 (北京大学)</td><td>论文</td><td>★★★☆☆</td></tr>
+    <tr><td>19</td><td>Post-Layout BO Sizing</td><td class="url-cell">Sci. China Info. Sci. 2024</td><td>论文</td><td>★★★☆☆</td></tr>
+    <tr><td>20</td><td>Masala-CHAI</td><td class="url-cell">arxiv.org/abs/2411.14299</td><td>论文</td><td>★★☆☆☆</td></tr>
+    <tr><td>21</td><td>EDiSon</td><td class="url-cell">NeurIPS 2024</td><td>论文</td><td>★★★☆☆</td></tr>
+    <tr><td>22</td><td>PPAAS</td><td class="url-cell">2025</td><td>论文</td><td>★★★☆☆</td></tr>
+    <tr><td>23</td><td>AMSnet-KG</td><td class="url-cell">ACM TODAES 2025-2026</td><td>论文</td><td>★★★☆☆</td></tr>
+    <tr><td>24</td><td>PySpice</td><td class="url-cell">github.com/thejackal360/OpenSPICE</td><td>GitHub</td><td>★★★★☆</td></tr>
+    <tr><td>25</td><td>spicelib</td><td class="url-cell">pypi.org/project/spicelib</td><td>PyPI</td><td>★★★☆☆</td></tr>
+    <tr><td>26</td><td>PyOpus</td><td class="url-cell">wiki.f-si.org</td><td>库</td><td>★★★☆☆</td></tr>
+    <tr><td>27</td><td>华大九天 Empyrean</td><td class="url-cell">301269.SZ</td><td>商业</td><td>★★★☆☆</td></tr>
+    <tr><td>28</td><td>概伦电子 Primarius</td><td class="url-cell">688206.SH</td><td>商业</td><td>★★★☆☆</td></tr>
+    <tr><td>29</td><td>广立微 Semitronix</td><td class="url-cell">301095.SZ</td><td>商业</td><td>★★☆☆☆</td></tr>
+    <tr><td>30</td><td>Ralph Loop Optimizer</td><td class="url-cell">github.com/haoran-ni/ralph-loop-optimizer</td><td>GitHub</td><td>★★★☆☆</td></tr>
+    <tr><td>31</td><td>GENIE-ASI</td><td class="url-cell">MLCAD 2025 (Sony)</td><td>论文</td><td>★★☆☆☆</td></tr>
+    <tr><td>32</td><td>vivado-mcp-agent</td><td class="url-cell">himcp.ai</td><td>MCP</td><td>★★☆☆☆</td></tr>
+  </table>
+
+  <div class="key-nums">
+    <div class="key-num"><div class="num">17</div><div class="label">学术论文</div></div>
+    <div class="key-num"><div class="num">10</div><div class="label">GitHub 仓库</div></div>
+    <div class="key-num"><div class="num">3</div><div class="label">商业公司</div></div>
+    <div class="key-num"><div class="num">2</div><div class="label">Python 库</div></div>
+    <div class="key-num"><div class="num">5</div><div class="label">工程空白</div></div>
+  </div>
+</section>
+
+</div>
+
+<div class="footer">
+  <a href="../index.html" style="color:var(--blue);text-decoration:none">← 返回博文列表</a> · 2026-06-08
+</div>
+
+</body>
+</html>

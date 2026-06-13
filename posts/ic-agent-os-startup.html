@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IC Agent OS · 项目启动方案</title>
+<style>
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+:root {
+  --blue:#024BA1; --blue-dk:#013672; --blue-lt:#557DBF; --blue-bg:#EDF2FB;
+  --navy:#1A2A44; --orange:#ED7D31; --white:#FFFFFF;
+  --g50:#F8F9FA; --g100:#F1F3F5; --g200:#E9ECEF; --g300:#DEE2E6;
+  --g500:#6C757D; --g700:#495057; --g900:#212529;
+  --green:#2D8B4E; --red:#C0392B; --purple:#6A4C93; --teal:#0D7377;
+}
+html { scroll-behavior:smooth; }
+body { font-family:"Helvetica Neue",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; color:var(--g900); line-height:1.75; font-size:15px; background:var(--white); }
+.topnav { position:fixed; top:0; left:0; right:0; height:52px; background:var(--blue); display:flex; align-items:center; justify-content:space-between; padding:0 32px; z-index:100; box-shadow:0 1px 6px rgba(0,0,0,.15); }
+.topnav-title { color:var(--white); font-size:15px; font-weight:600; letter-spacing:.3px; }
+.topnav-links a { color:rgba(255,255,255,.8); text-decoration:none; font-size:12px; margin-left:10px; transition:color .2s; }
+.topnav-links a:hover { color:var(--white); }
+.container { max-width:1020px; margin:0 auto; padding:0 24px; }
+.hero { padding:100px 0 46px; text-align:center; }
+.hero h1 { font-size:32px; font-weight:700; color:var(--blue); margin-bottom:8px; }
+.hero .subtitle { font-size:17px; color:var(--g500); margin-bottom:20px; }
+.hero .tags { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+.tag { display:inline-block; padding:4px 14px; border-radius:18px; font-size:13px; font-weight:500; }
+.tag-blue{ background:var(--blue-bg); color:var(--blue);} .tag-orange{ background:#FFF3E0; color:var(--orange);} .tag-green{ background:#E8F5E9; color:var(--green);}
+.tag-purple{ background:#F3E5F5; color:var(--purple);} .tag-teal{ background:#E0F7FA; color:var(--teal);}
+section { padding:46px 0; border-top:1px solid var(--g200); }
+.sec-num { display:inline-block; font-size:13px; font-weight:700; color:var(--orange); letter-spacing:1px; margin-bottom:2px; }
+h2 { font-size:26px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+.section-lead { font-size:15px; color:var(--g500); margin-bottom:24px; }
+h3 { font-size:18px; font-weight:600; color:var(--blue); margin:24px 0 10px; }
+h4 { font-size:15px; font-weight:600; color:var(--navy); margin:18px 0 8px; }
+p { margin-bottom:10px; }
+.highlight { background:var(--blue-bg); border-left:4px solid var(--blue); border-radius:0 6px 6px 0; padding:12px 18px; margin:16px 0; font-size:14px; color:var(--navy); }
+.highlight strong { color:var(--blue); }
+.highlight.orange { border-left-color:var(--orange); background:#FFF8F0; } .highlight.orange strong { color:var(--orange); }
+.highlight.green { border-left-color:var(--green); background:#F2FBF5; } .highlight.green strong { color:var(--green); }
+.highlight.purple { border-left-color:var(--purple); background:#F8F4FA; } .highlight.purple strong { color:var(--purple); }
+.quote-banner { background:var(--navy); color:var(--white); border-radius:8px; padding:18px 24px; margin:18px 0; font-size:16px; font-style:italic; text-align:center; }
+.quote-banner strong { color:#FFD27F; font-style:normal; }
+table { width:100%; border-collapse:collapse; font-size:13px; margin:14px 0; }
+th { background:var(--blue); color:var(--white); padding:8px 12px; text-align:center; font-weight:600; font-size:12px; }
+td { padding:7px 12px; text-align:left; border-bottom:1px solid var(--g300); vertical-align:top; }
+tr:nth-child(even) td { background:var(--g50); }
+td.center,th.center { text-align:center; }
+.key-nums { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin:20px 0; }
+.key-num { text-align:center; padding:16px 24px; background:var(--blue-bg); border-radius:10px; min-width:120px; }
+.key-num .num { font-size:28px; font-weight:700; color:var(--blue); line-height:1.1; }
+.key-num .label { font-size:12px; color:var(--g500); margin-top:4px; }
+.card-row { display:flex; gap:14px; margin:14px 0; flex-wrap:wrap; }
+.card { flex:1; min-width:220px; border:1.5px solid var(--g300); border-radius:8px; padding:18px 20px; background:var(--white); }
+.card-blue{ border-color:var(--blue); background:var(--blue-bg);} .card-navy{ border-color:var(--navy); background:#F4F6FA;}
+.card-green{ border-color:var(--green); background:#F2FBF5;} .card-orange{ border-color:var(--orange); background:#FFF8F0;}
+.card-purple{ border-color:var(--purple); background:#F8F4FA;} .card-teal{ border-color:var(--teal); background:#F0FAFB;}
+.card h4 { font-size:15px; font-weight:600; margin-bottom:8px; }
+.card-blue h4{ color:var(--blue);} .card-green h4{ color:var(--green);} .card-orange h4{ color:var(--orange);} .card-purple h4{ color:var(--purple);} .card-teal h4{ color:var(--teal);}
+.card p,.card li { font-size:13px; color:var(--g700); } .card ul { padding-left:15px; } .card li { margin-bottom:3px; }
+pre.code { font-size:12px; line-height:1.55; background:var(--g50); color:var(--g900); padding:12px 14px; border-radius:6px; overflow-x:auto; margin:12px 0; border:1px solid var(--g200); }
+.footer { text-align:center; padding:36px 0; font-size:12px; color:var(--g500); border-top:1px solid var(--g200); }
+.tag-pill { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
+.pill-engineer { background:var(--blue-bg); color:var(--blue);}
+.pill-student { background:#E8F5E9; color:var(--green);}
+.pill-teacher { background:var(--navy); color:var(--white);}
+.pill-core { background:#FFF3E0; color:var(--orange);}
+.pill-skill { background:#F3E5F5; color:var(--purple);}
+.pill-milestone { background:#E0F7FA; color:var(--teal);}
+.flow-stages { margin:16px 0; }
+.flow-stage { border-left:3px solid var(--blue); padding:8px 14px; margin-bottom:6px; background:var(--g50); border-radius:0 6px 6px 0; }
+.flow-stage .fs-num { font-weight:700; color:var(--blue); font-size:12px; }
+.flow-stage .fs-name { font-weight:600; font-size:13px; }
+.flow-stage .fs-desc { font-size:12px; color:var(--g700); margin-top:2px; }
+.arch-diagram { background:var(--g50); border:1px solid var(--g300); border-radius:8px; padding:20px; margin:16px 0; font-family:ui-monospace,Menlo,monospace; font-size:12px; line-height:1.55; overflow-x:auto; white-space:pre; }
+.io-box { border:1.5px solid var(--g300); border-radius:6px; padding:12px 16px; margin:10px 0; background:var(--white); }
+.io-box .io-label { font-size:11px; font-weight:700; color:var(--g500); text-transform:uppercase; letter-spacing:.5px; }
+.io-box .io-content { font-size:13px; color:var(--g900); margin-top:4px; font-family:ui-monospace,Menlo,monospace; }
+.persona-card { border:2px solid var(--g300); border-radius:10px; padding:20px 24px; margin:16px 0; background:var(--white); }
+.persona-card.engineer { border-color:var(--blue); }
+.persona-card.student-a { border-color:var(--green); }
+.persona-card.student-b { border-color:var(--orange); }
+.persona-card.student-c { border-color:var(--purple); }
+.persona-card.teacher { border-color:var(--navy); }
+.persona-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.persona-avatar { width:48px; height:48px; border-radius:24px; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:var(--white); }
+.persona-card.engineer .persona-avatar { background:var(--blue); }
+.persona-card.student-a .persona-avatar { background:var(--green); }
+.persona-card.student-b .persona-avatar { background:var(--orange); }
+.persona-card.student-c .persona-avatar { background:var(--purple); }
+.persona-card.teacher .persona-avatar { background:var(--navy); }
+.persona-name { font-size:17px; font-weight:700; }
+.persona-card.engineer .persona-name { color:var(--blue); }
+.persona-card.student-a .persona-name { color:var(--green); }
+.persona-card.student-b .persona-name { color:var(--orange); }
+.persona-card.student-c .persona-name { color:var(--purple); }
+.persona-card.teacher .persona-name { color:var(--navy); }
+.persona-role { font-size:12px; color:var(--g500); }
+.timeline { position:relative; margin:20px 0; padding-left:30px; }
+.timeline::before { content:''; position:absolute; left:8px; top:0; bottom:0; width:3px; background:var(--g200); border-radius:2px; }
+.tl-item { position:relative; margin-bottom:20px; padding-left:20px; }
+.tl-item::before { content:''; position:absolute; left:-26px; top:5px; width:12px; height:12px; border-radius:6px; background:var(--blue); border:2px solid var(--white); box-shadow:0 0 0 2px var(--blue); }
+.tl-item.m2::before { background:var(--green); box-shadow:0 0 0 2px var(--green); }
+.tl-item.m3::before { background:var(--orange); box-shadow:0 0 0 2px var(--orange); }
+.tl-item.m4::before { background:var(--purple); box-shadow:0 0 0 2px var(--purple); }
+.tl-week { font-size:11px; font-weight:700; color:var(--g500); letter-spacing:.5px; }
+.tl-title { font-size:15px; font-weight:600; color:var(--navy); }
+.tl-desc { font-size:13px; color:var(--g700); margin-top:4px; }
+.circuit-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:10px; margin:14px 0; }
+.circuit-chip { background:var(--g50); border:1px solid var(--g300); border-radius:6px; padding:10px 14px; font-size:13px; }
+.circuit-chip .cc-name { font-weight:600; color:var(--navy); }
+.circuit-chip .cc-params { font-size:11px; color:var(--g500); margin-top:3px; }
+@media (max-width:760px){
+  .card-row{ flex-direction:column; } .hero h1{ font-size:22px; }
+  .topnav-links{ display:none; }
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="topnav-title">李志军 · 博文</div>
+  <div class="topnav-links">
+    <a href="../index.html">← 返回</a>
+    <a href="#benchmark">Benchmark</a>
+    <a href="#goal">目标</a>
+    <a href="#arch">架构</a>
+    <a href="#team">分工</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1>IC Agent OS 项目启动方案</h1>
+    <p class="subtitle">基于 OpenCode · SkillOpt 调度 · 技能自进化 · 开源标杆</p>
+    <div class="tags">
+      <span class="tag tag-green">P1 模拟 IC · ngspice + sky130</span>
+      <span class="tag tag-blue">AS_OF: 2026-06-13</span>
+      <span class="tag tag-orange">5 人团队 · 6 周交付</span>
+      <span class="tag tag-purple">OpenCode + SkillOpt</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ════════════ Benchmark 介绍 ════════════ -->
+<section id="benchmark" style="border-top:none;">
+  <span class="sec-num">BENCHMARK</span>
+  <h2>为什么选 AnalogGym？</h2>
+  <p class="section-lead">选择一个标准 benchmark 是项目启动的第一步。它决定了我们能跟谁比、怎么比、以及结果能否被学术界认可。</p>
+
+  <h3>AnalogGym 是什么</h3>
+  <p>AnalogGym 是<strong>第一个面向模拟电路自动综合的标准化测试套件</strong>，发表于 ICCAD 2024（顶会，Invited Paper），由复旦大学、北京大学、MIT 等多个团队联合推出。它的定位类似计算机视觉的 ImageNet 或强化学习的 OpenAI Gym——在它之前，每个做模拟电路优化的团队各用各的电路、各用各的 PDK、各用各的指标，根本没法横向对比。</p>
+
+  <div class="key-nums">
+    <div class="key-num"><div class="num">30+</div><div class="label">电路拓扑</div></div>
+    <div class="key-num"><div class="num">5</div><div class="label">电路类别</div></div>
+    <div class="key-num"><div class="num">21</div><div class="label">开源可用(ngspice+sky130)</div></div>
+    <div class="key-num"><div class="num">ICCAD'24</div><div class="label">发表 venue</div></div>
+    <div class="key-num"><div class="num">3</div><div class="label">支持仿真器</div></div>
+  </div>
+
+  <table>
+    <tr><th>类别</th><th>数量</th><th>支持 ngspice?</th><th>典型电路</th><th>参数空间</th><th>指标</th></tr>
+    <tr>
+      <td><strong>Amplifier (AMP)</strong></td>
+      <td class="center">17</td>
+      <td class="center">✅ sky130</td>
+      <td>TwoSt_SMCNR、Cascode_Miller、Leung_NMCF、Leung_NMCNR、Leung_DFCFC1/2、Peng_ACBC、Peng_IAC、Fan_SMC、HoiLee_AFFC、Qu_LEC、Qu_AZC、Ramos_PFC、Sau_CFCC、Song_DACFC、Tan_CLIA、Yan_AZ、Alfio_RAFFC</td>
+      <td class="center">15~60+ 参数</td>
+      <td>Gain、GBW、PM、PSRR、CMRR、SR、Settling、Power、Area、Noise、Offset、TC</td>
+    </tr>
+    <tr>
+      <td><strong>LDO</strong></td>
+      <td class="center">4</td>
+      <td class="center">✅ sky130</td>
+      <td>ldo_simple、ldo_1、ldo_2、ldo_folded_cascode</td>
+      <td class="center">8~20 参数</td>
+      <td>Dropout、Load/Line Regulation、PSRR、Efficiency、Stability</td>
+    </tr>
+    <tr>
+      <td>Sensing Front End</td>
+      <td class="center">6</td>
+      <td class="center">❌ Spectre</td>
+      <td colspan="3" style="color:var(--g500);">含 PTAT、2T sensor 等——需要 Spectre 商业 License，P1 暂不覆盖</td>
+    </tr>
+    <tr>
+      <td>Voltage Reference</td>
+      <td class="center">3</td>
+      <td class="center">❌ HSPICE</td>
+      <td colspan="3" style="color:var(--g500);">含 BGR、Sub-threshold V&I Ref 等——论文提供了最优设计参考，但需要 HSPICE</td>
+    </tr>
+    <tr>
+      <td>PLL / Charge Pump</td>
+      <td class="center">2</td>
+      <td class="center">❌ HSPICE</td>
+      <td colspan="3" style="color:var(--g500);">PLL VCO + Charge Pump——需要精确噪声建模，开源 PDK 不提供</td>
+    </tr>
+  </table>
+
+  <h3>为什么选它</h3>
+  <div class="card-row">
+    <div class="card card-green">
+      <h4>✅ 标准化，可复现</h4>
+      <p>每个电路自带 netlist + testbench + PVT corner 定义 + 指标提取脚本。别人跑出来什么结果，我们同样环境跑一遍，数字可以直接横向对比。</p>
+    </div>
+    <div class="card card-green">
+      <h4>✅ 开源工具链</h4>
+      <p>AMP 和 LDO 共 21 个电路支持 ngspice + sky130 PDK，全部开源，无需商业 License。学生可以自己在笔记本上跑通完整流程。</p>
+    </div>
+    <div class="card card-green">
+      <h4>✅ 覆盖面广</h4>
+      <p>17 个 AMP 跨多种拓扑结构（两级/共源共栅/嵌套 Miller/class-AB），不同复杂度、不同补偿策略——真正测试"统一架构"能否 work。</p>
+    </div>
+    <div class="card card-green">
+      <h4>✅ 有竞品参照</h4>
+      <p>AnalogGym 论文本身跑了 GCNRL、WEIBO、cVTS、SMEA、MTEA 5 个 baseline。我们可以把 AnalogSAGE 也在上面跑一遍，得到完整的竞品数据。</p>
+    </div>
+  </div>
+
+  <div class="highlight orange">
+    <strong>P1 聚焦 21 个 ngspice+sky130 电路。</strong>剩下 11 个电路（Sensing/VR/PLL）需要商业 EDA License，P2/P3 阶段通过 Adapter 对接 Spectre/HSPICE 后自然会覆盖。P1 先用 21 个电路证明架构可行性。
+  </div>
+
+  <h3>一个具体电路的例子：TwoSt_SMCNR</h3>
+  <p>以最简单的两级运放为例，看 AnalogGym 给了一个优化任务长什么样：</p>
+  <table>
+    <tr><th style="width:16%">要素</th><th>内容</th></tr>
+    <tr><td><strong>电路</strong></td><td>Two-Stage Single Miller Compensation with Nulling Resistor (SMCNR)，sky130 PDK</td></tr>
+    <tr><td><strong>参数</strong></td><td>~15 个变量：偏置管 W/L/M ×3、输入管 W/L/M ×2、负载管 W/L/M ×2、密勒电容、调零电阻、偏置电流、负载电容</td></tr>
+    <tr><td><strong>Spec</strong></td><td>Gain ≥ 60dB, GBW ≥ 10MHz, PM ≥ 60°, Power ≤ 1mW, SR ≥ 10V/µs, ...</td></tr>
+    <tr><td><strong>Testbench</strong></td><td>AC 分析（增益/带宽/相位）+ DC 分析（功耗/工作点）+ Transient 分析（摆率/建立时间）+ PVT Corner ×5</td></tr>
+    <tr><td><strong>指标提取</strong></td><td>AnalogGym 提供 <code>perf_extraction_amp.py</code>——从 ngspice 输出自动解析所有指标</td></tr>
+  </table>
+  <p>IC-Agent-OS 要做的，就是给定这样一个任务，自动完成 Spec → Sizing → 仿真 → 对比 Spec → 调整 Sizing → 重新仿真 → ... → 全部指标达标。</p>
+</section>
+
+<!-- ════════════ 项目目标 ════════════ -->
+<section id="goal">
+  <span class="sec-num">PROJECT GOAL</span>
+  <h2>项目目标与定位</h2>
+
+  <div class="quote-banner">
+    <strong>一句话目标：在 AnalogGym 的 21 个 ngspice+sky130 电路上，基于 OpenCode + SkillOpt 调度，同一套工具和技能跑通全闭环，平均仿真次数优于 AnalogSAGE 同级水平 50% 以上。</strong>
+  </div>
+
+  <div class="card-row">
+    <div class="card card-blue">
+      <h4>🔧 工具化</h4>
+      <p>IC-Agent-OS = OpenCode + 一组 EDA 专用工具（Adapter/Optimizer/State）+ 一组可进化的技能文档。OpenCode 负责 Agent 循环，我们负责领域能力。</p>
+    </div>
+    <div class="card card-orange">
+      <h4>🧬 Skill 调度</h4>
+      <p>不做 hardcode 的优化流水线。SkillOpt 机制管理技能的选择、评估、进化——什么电路加载什么技能、用哪个优化策略、什么时候触发进化，全由调度器决策。</p>
+    </div>
+    <div class="card card-purple">
+      <h4>📐 标准化对比</h4>
+      <p>所有实验在 AnalogGym 标准 benchmark 上运行，所有数字公开可复现。不自己造 benchmark，不和自己的旧版本比，只和竞品在同一个电路上比。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ 系统架构 ════════════ -->
+<section id="arch">
+  <span class="sec-num">SYSTEM ARCHITECTURE</span>
+  <h2>系统架构</h2>
+  <p class="section-lead">IC-Agent-OS 不自己写 Agent 循环。OpenCode 提供 Agent 运行时（LLM 交互、工具调用、上下文管理），我们提供<strong>领域工具 + 可进化技能 + SkillOpt 调度器</strong>。</p>
+
+  <div class="arch-diagram">
+┌──────────────────────────────────────────────────────────────────┐
+│                     IC-Agent-OS                                  │
+│                                                                  │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │              SkillOpt Scheduler                            │ │
+│  │                                                            │ │
+│  │  技能选择 → 任务分发 → 结果收集 → 评估 → 进化(Edit+Gate)      │ │
+│  │                                                            │ │
+│  │  SizingSkill.md  DiagnoseSkill.md  InitSkill.md            │ │
+│  │       ↑ 编辑            ↑ 编辑            ↑ 编辑            │ │
+│  │       └─────────────────┼─────────────────┘                │ │
+│  │                    Gate (验证门控)                           │ │
+│  └────────────────────────┬───────────────────────────────────┘ │
+│                           │                                      │
+│  ┌────────────────────────▼───────────────────────────────────┐ │
+│  │                  OpenCode Agent Runtime                     │ │
+│  │                                                            │ │
+│  │  读取 Skill 文档 → 理解任务 → 调用工具 → 迭代执行             │ │
+│  │                                                            │ │
+│  │        ┌──────────┐  ┌──────────┐  ┌──────────┐           │ │
+│  │        │ Adapter  │  │Optimizer │  │  State   │           │ │
+│  │        │  Tool    │  │  Tool    │  │  Tool    │           │ │
+│  │        └────┬─────┘  └────┬─────┘  └────┬─────┘           │ │
+│  └─────────────┼─────────────┼─────────────┼─────────────────┘ │
+│                │             │             │                    │
+│  ┌─────────────▼─────────────▼─────────────▼─────────────────┐ │
+│  │                  EDA Layer                                 │ │
+│  │  ngspice / sky130 PDK / AnalogGym Testbench                │ │
+│  └───────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────┘
+  </div>
+
+  <h3>为什么选 OpenCode？</h3>
+  <div class="card-row">
+    <div class="card card-navy">
+      <h4>不重复造轮子</h4>
+      <p>Agent 循环（LLM 调用、工具路由、上下文窗口管理、错误重试）是通用能力。OpenCode 已经做得很好了，我们不重新发明。</p>
+    </div>
+    <div class="card card-navy">
+      <h4>Skill 原生支持</h4>
+      <p>OpenCode 的 skill 系统（.md 文件作为 Agent 指令）恰好是 SkillOpt 的操作对象——我们把 SkillOpt 接在 OpenCode 外边做 skill 的评估和进化，不改 OpenCode 一行代码。</p>
+    </div>
+    <div class="card card-navy">
+      <h4>开源 + 可定制 Tool</h4>
+      <p>OpenCode 允许注册自定义 Tool。我们的 Adapter/Optimizer/State 作为 Tool 接入，OpenCode 根据 Skill 指令决定何时调用哪个 Tool。</p>
+    </div>
+  </div>
+
+  <h3>三个自定义 Tool</h3>
+  <table>
+    <tr><th style="width:15%">Tool</th><th style="width:20%">调用时机</th><th>输入</th><th>输出</th></tr>
+    <tr>
+      <td><strong>Adapter Tool</strong></td>
+      <td>OpenCode 决定"需要测一下当前设计"</td>
+      <td>netlist + analyses 列表 + PDK 配置</td>
+      <td>StructuredMetrics 或 SimError</td>
+    </tr>
+    <tr>
+      <td><strong>Optimizer Tool</strong></td>
+      <td>OpenCode 决定"需要新的参数候选"</td>
+      <td>ParamSpace + Constraints + History + Hint</td>
+      <td>Proposal { params + rationale }</td>
+    </tr>
+    <tr>
+      <td><strong>State Tool</strong></td>
+      <td>每次迭代后自动记录 / OpenCode 需要查历史</td>
+      <td>(Snapshot, Diff, KnowledgeQuery) 三种操作模式</td>
+      <td>对应三种模式的不同输出</td>
+    </tr>
+  </table>
+
+  <h3>一条典型任务是怎么执行的</h3>
+  <pre class="code"># OpenCode 加载 SizingSkill.md 后，Agent 自主决策执行以下循环：
+
+1. [OpenCode] 读取 Spec: Gain≥60dB, GBW≥10MHz, PM≥60°, Power≤1mW
+2. [OpenCode] 调用 InitSkill 获取初始参数起点
+3. [OpenCode] 调用 Adapter Tool: simulate(netlist_template + init_params)
+4. [Adapter Tool 返回] { gain: 48dB, gbw: 8.2MHz, pm: 72°, power: 0.6mW }
+5. [OpenCode] 对比 Spec → gap: gain 差 12dB, gbw 差 1.8MHz, pm 已达标
+6. [OpenCode] 调用 Optimizer Tool: propose(gap, history, SizingSkill)
+7. [Optimizer Tool 返回] Proposal { M3_W: 8→14u, M1_W: 5→8u, rationale: "..." }
+8. [OpenCode] 渲染新 netlist → 回到步骤 3
+   ...
+N. [OpenCode] 全指标达标 → 调用 State Tool 记录轨迹 → 返回最终设计
+
+# 这一轮结束后，SkillOpt Scheduler 在后台：
+#   - 收集本轮轨迹数据
+#   - 当积累足够新数据后触发 Skill 进化迭代
+#   - 在 held-out 电路上验证新 Skill，严格提升才接受</pre>
+</section>
+
+<!-- ════════════ 团队分工 ════════════ -->
+<section id="team">
+  <span class="sec-num">TEAM</span>
+  <h2>团队分工</h2>
+  <p class="section-lead">5 人团队，3 个 Tool 并行开发。第 1 周李志军产出 Tool 接口 spec + Skill 模板，之后各 Tool 独立推进，通过接口契约解耦。</p>
+
+  <h3>角色总览</h3>
+  <table>
+    <tr><th style="width:12%">角色</th><th style="width:12%">人员</th><th style="width:16%">模块</th><th>一句话职责</th></tr>
+    <tr>
+      <td class="center"><strong>老师</strong></td>
+      <td class="center">李老师</td>
+      <td class="center">顶层管理</td>
+      <td>定方向与里程碑、架构审计、生态建设</td>
+    </tr>
+    <tr>
+      <td class="center"><strong>工程师</strong></td>
+      <td class="center">李志军</td>
+      <td class="center">SkillOpt 调度器</td>
+      <td>OpenCode 集成 + Skill 模板 + SkillOpt 调度器 + 各 Tool 接口定义 + Code Review</td>
+    </tr>
+    <tr>
+      <td class="center">学生 A</td>
+      <td class="center">—</td>
+      <td class="center">Adapter Tool</td>
+      <td>ngspice 仿真执行 + 结构化指标解析 + 错误诊断</td>
+    </tr>
+    <tr>
+      <td class="center">学生 B</td>
+      <td class="center">—</td>
+      <td class="center">Optimizer Tool</td>
+      <td>Random Search → BO → LLM-Guided → Hybrid 通用优化引擎</td>
+    </tr>
+    <tr>
+      <td class="center">学生 C</td>
+      <td class="center">—</td>
+      <td class="center">State Tool</td>
+      <td>轨迹记录 + 指标级 Diff + 知识提取 + Skill 进化数据供给</td>
+    </tr>
+  </table>
+
+  <!-- 李老师 -->
+  <div class="persona-card teacher">
+    <div class="persona-header">
+      <div class="persona-avatar">◆</div>
+      <div>
+        <div class="persona-name">李老师 · 顶层管理</div>
+        <div class="persona-role">方向把控 · 架构审计 · 生态建设 · 产学研合作</div>
+      </div>
+    </div>
+    <div class="card-row">
+      <div class="card card-navy" style="min-width:200px;">
+        <h4>职责</h4>
+        <ul>
+          <li>定 P1/P2/P3 里程碑和交付标准</li>
+          <li>架构审计——关键设计决策拍板</li>
+          <li>生态建设——Adapter 开放协议推广、国产 EDA 厂商对接、学术合作</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 李志军 -->
+  <div class="persona-card engineer">
+    <div class="persona-header">
+      <div class="persona-avatar">◆</div>
+      <div>
+        <div class="persona-name">李志军 · SkillOpt 调度器</div>
+        <div class="persona-role">核心开发 · OpenCode 集成 · Skill 进化 · 接口定义</div>
+      </div>
+    </div>
+    <div class="card-row">
+      <div class="card card-blue" style="min-width:200px;">
+        <h4>第 1 周交付</h4>
+        <ul>
+          <li>3 个 Tool 的接口 spec（每个 Tool 的输入输出定义 + 示例）</li>
+          <li>3 个 Skill 模板（SizingSkill / DiagnoseSkill / InitSkill 初始版）</li>
+          <li>OpenCode + ngspice + sky130 环境搭建文档</li>
+          <li>各学生调研清单</li>
+        </ul>
+      </div>
+      <div class="card card-blue" style="min-width:200px;">
+        <h4>第 2-4 周交付</h4>
+        <ul>
+          <li>OpenCode 集成——注册 3 个 Tool 到 OpenCode</li>
+          <li>SkillOpt 调度器 v0——技能选择 + 任务分发 + 结果收集</li>
+          <li>最小闭环跑通（1 个电路 + 3 个 Tool + 1 个 Skill）</li>
+        </ul>
+      </div>
+      <div class="card card-blue" style="min-width:200px;">
+        <h4>关键决策</h4>
+        <ul>
+          <li>OpenCode Tool 注册方式 & 协议</li>
+          <li>Skill 格式约定（如何被 OpenCode 加载、如何被 SkillOpt 编辑）</li>
+          <li>SkillOpt Rollout/Reflect/Edit/Gate 各阶段的触发条件</li>
+          <li>验证集（held-out 电路）的选择策略</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 学生 A -->
+  <div class="persona-card student-a">
+    <div class="persona-header">
+      <div class="persona-avatar">◆</div>
+      <div>
+        <div class="persona-name">学生 A · Adapter Tool</div>
+        <div class="persona-role">EDA 工具接入 · ngspice 仿真 · 指标提取 · 错误诊断</div>
+      </div>
+    </div>
+    <p><strong>目标：</strong>让 OpenCode 能通过一个 Tool 调用来跑 ngspice 仿真并拿到结构化指标。</p>
+
+    <div class="io-box">
+      <div class="io-label">📥 Tool 输入</div>
+      <div class="io-content">netlist（字符串） + analyses（["ac","dc","tran"]） + config（PDK路径、精度参数）</div>
+    </div>
+    <div class="io-box">
+      <div class="io-label">📤 Tool 输出 — 成功</div>
+      <div class="io-content">StructuredMetrics { "ac": {"gain_db":72.3, "gbw_hz":15.2e6, "pm_deg":68.5}, "dc":{"power_mw":0.85}, "tran":{"sr_vus":12.1} }</div>
+    </div>
+    <div class="io-box">
+      <div class="io-label">📤 Tool 输出 — 失败</div>
+      <div class="io-content">SimError { "type":"convergence_fail", "raw_log":"...", "likely_cause":"oscillation at node net049" }</div>
+    </div>
+
+    <h4>分阶段交付</h4>
+    <table>
+      <tr><th style="width:10%">周</th><th>交付物</th><th>说明</th></tr>
+      <tr><td class="center">1</td><td>调研报告</td><td>EDA 工具全景图（仿真器 / 综合 / 布局布线 / DRC / 提取）；ngspice 的 Python 调用方式对比（subprocess / CFFI / PySpice）；AnalogGym testbench 结构分析；SiliconCompiler Tool Schema 分析；AutoEDA MCP 架构分析</td></tr>
+      <tr><td class="center">2</td><td><code>adapter_tool.py</code> v0.1</td><td>子进程调用 ngspice，跑通 AnalogGym TwoSt_SMCNR AC 分析，拿到原始输出</td></tr>
+      <tr><td class="center">3</td><td><code>metric_parser.py</code></td><td>解析 ngspice .measure 输出 → StructuredMetrics（参考 AnalogGym perf_extraction_amp.py）</td></tr>
+      <tr><td class="center">4</td><td><code>error_diagnosis.py</code> + 全电路适配</td><td>仿真报错结构化诊断；21 个电路全跑通</td></tr>
+    </table>
+
+    <h4>参考项目</h4>
+    <table>
+      <tr><th>项目</th><th>学什么</th></tr>
+      <tr><td>SiliconCompiler</td><td>Tool Schema JSON 设计、PDK 对象模型抽象</td></tr>
+      <tr><td>PySpice / spicelib</td><td>ngspice CFFI 绑定方式、多仿真器接口抽象</td></tr>
+      <tr><td>AutoEDA (MCP-EDA-Server)</td><td>MCP 微服务架构、Tool Schema 定义、Token 优化</td></tr>
+      <tr><td>AnalogGym</td><td>perf_extraction_amp.py / perf_extraction_LDO.py 指标提取逻辑</td></tr>
+    </table>
+  </div>
+
+  <!-- 学生 B -->
+  <div class="persona-card student-b">
+    <div class="persona-header">
+      <div class="persona-avatar">◆</div>
+      <div>
+        <div class="persona-name">学生 B · Optimizer Tool</div>
+        <div class="persona-role">通用黑箱优化 · Random Search → BO → LLM-Guided → Hybrid</div>
+      </div>
+    </div>
+    <p><strong>目标：</strong>做一个通用约束优化引擎。不内置任何电路知识——电路知识来自 Skill 文档和 KnowledgeHint。</p>
+
+    <div class="io-box">
+      <div class="io-label">📥 Tool 输入</div>
+      <div class="io-content">ParamSpace（连续+离散混合变量）+ Constraints（指标约束表）+ History（历史轨迹）+ KnowledgeHint（学生C给的先验）+ SizingSkill（自进化策略文档）</div>
+    </div>
+    <div class="io-box">
+      <div class="io-label">📤 Tool 输出</div>
+      <div class="io-content">Proposal { params: {"M3_W":12.3u, "M3_M":8, "Cc":2.1p}, rationale: "增大输入对管W提升gm，补偿电容减小改善带宽" }</div>
+    </div>
+
+    <h4>分阶段交付</h4>
+    <table>
+      <tr><th style="width:10%">周</th><th>交付物</th><th>说明</th></tr>
+      <tr><td class="center">1</td><td>调研报告</td><td>BO 方法对比（GP/EI/TuRBO/SAASBO）；开源库对比（BoTorch/scikit-optimize/Ax/HEBO）；LLM+BO 混合方法调研（AnalogSAGE/EasySize/ADO-LLM/LEDRO）；Stagnation 检测策略；混合变量处理</td></tr>
+      <tr><td class="center">2</td><td><code>random_search.py</code></td><td>基线实现：均匀/对数采样 + 约束检查；最简流程跑通</td></tr>
+      <tr><td class="center">3</td><td><code>bo_optimizer.py</code></td><td>接开源 BO 库，处理混合变量；TuRBO 或 SAASBO 处理高维</td></tr>
+      <tr><td class="center">4</td><td><code>llm_guided.py</code> + <code>hybrid.py</code></td><td>LLM 看 gap+历史→输出参数建议；Stagnation 检测→自动切策略；LLM+BO 混合</td></tr>
+    </table>
+
+    <div class="highlight orange">
+      <strong>核心约束：Optimizer 不对电路做任何假设。</strong>不 hardcode "M3 是输入对管"、"增大 W 提升增益"。这些知识来自 Skill 文档和 KnowledgeHint。Optimizer 只负责"给定搜索空间和约束，高效找到可行解"。
+    </div>
+
+    <h4>参考项目</h4>
+    <table>
+      <tr><th>项目</th><th>学什么</th></tr>
+      <tr><td>AnalogSAGE (BO.py + sizing.py)</td><td>LLM + BO 混合调度、sizing 策略编码</td></tr>
+      <tr><td>EasySize</td><td>LLM 导出损失函数 → DE/PSO 优化的"先验注入"模式</td></tr>
+      <tr><td>ADO-LLM</td><td>LLM 注入先验约束 → BO 采样的协同机制</td></tr>
+      <tr><td>RoSE</td><td>BO→RL 切换策略、知识注入方式</td></tr>
+      <tr><td>LEDRO</td><td>LLM 设计空间缩减方法</td></tr>
+      <tr><td>Self-Calibrating LLM (arXiv 2604.07387)</td><td>单 DC 工作点校准、极低仿真次数收敛</td></tr>
+    </table>
+  </div>
+
+  <!-- 学生 C -->
+  <div class="persona-card student-c">
+    <div class="persona-header">
+      <div class="persona-avatar">◆</div>
+      <div>
+        <div class="persona-name">学生 C · State Tool</div>
+        <div class="persona-role">轨迹记录 · 指标级 Diff · 知识提取 · Skill 进化数据</div>
+      </div>
+    </div>
+    <p><strong>目标：</strong>记录每次优化尝试的完整轨迹，支持指标级 Diff（非文本 diff），从历史提取可复用知识，为 SkillOpt 提供训练数据。</p>
+
+    <div class="io-box">
+      <div class="io-label">📥 Tool 支持三种操作模式</div>
+      <div class="io-content">
+        <strong>Snapshot</strong>: 存入 (params, metrics, gap, timestamp) → SnapshotId<br>
+        <strong>Diff</strong>: 传入 (SnapshotId_a, SnapshotId_b) → MetricDelta + 因果归因<br>
+        <strong>KnowledgeQuery</strong>: 传入 GapVector + 电路类型 → KnowledgeHint
+      </div>
+    </div>
+
+    <h4>分阶段交付</h4>
+    <table>
+      <tr><th style="width:10%">周</th><th>交付物</th><th>说明</th></tr>
+      <tr><td class="center">1</td><td>调研报告</td><td>AnalogSAGE 4 层记忆架构分析；EDiSon 设计记忆；Memento-Skills 有状态提示设计；SkillOpt 数据需求；实验管理工具调研</td></tr>
+      <tr><td class="center">2</td><td><code>snapshot.py</code> + 存储层</td><td>L1 Snapshot 不可变快照存储（JSON/SQLite）；基础查询接口</td></tr>
+      <tr><td class="center">3</td><td><code>delta.py</code></td><td>L2 指标级 Diff + LLM 辅助因果归因</td></tr>
+      <tr><td class="center">4</td><td><code>knowledge.py</code> + Skill 数据接口</td><td>L3 Action Log + 相关性提取 + 跨电路 Warm-Start 推荐 + Skill Evolution Rollout/Reflect 数据接口</td></tr>
+    </table>
+
+    <div class="highlight purple">
+      <strong>Diff 是"指标级"的，不是文件文本 diff。</strong>当 Optimizer 把 M3_W 从 8u 改到 12u，State Tool 要计算出 "增益 +3dB，带宽 −5MHz，功耗 +0.2mW"，并做因果归因。这需要 LLM 辅助，但数据结构要设计好。
+    </div>
+
+    <h4>参考项目</h4>
+    <table>
+      <tr><th>项目</th><th>学什么</th></tr>
+      <tr><td>AnalogSAGE (knowledge/insight/reflection)</td><td>分层记忆数据模型、向量检索、记忆生命周期</td></tr>
+      <tr><td>EDiSon (NeurIPS 2024)</td><td>Design Memory + 自适应探索/回放机制</td></tr>
+      <tr><td>Memento-Skills</td><td>有状态提示设计、结构化 Markdown 技能存储</td></tr>
+      <tr><td>SkillOpt (微软)</td><td>Rollout 数据格式、Reflect 分析流程、Gate 验证集设计</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════ 研发计划 ════════════ -->
+<section id="plan">
+  <span class="sec-num">DEVELOPMENT PLAN</span>
+  <h2>研发计划与里程碑</h2>
+  <p class="section-lead">目标一个半月（6 周），分 3 个里程碑。接口 spec 第 1 周由李志军冻结，之后 3 个 Tool 并行开发。</p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-week">第 1 周</div>
+      <div class="tl-title">M0 · 接口冻结 + 调研完成 + 环境就绪</div>
+      <div class="tl-desc">
+        <strong>李志军</strong>产出 3 个 Tool 接口 spec + 3 个 Skill 模板 + OpenCode 环境搭建文档；
+        <strong>学生 A/B/C</strong>各自产出调研报告（≥ 5 个参考项目 + 技术选型建议）；
+        <strong>全组</strong>对齐：GitHub 仓库就绪、OpenCode + ngspice + sky130 全环境配好、AnalogGym 21 个电路全部能本地跑通 testbench。
+        <br><span class="tag-pill pill-milestone">验收：Tool 接口 spec 全员 Review 通过；每人调研报告完成；21 个电路 testbench 全部本地跑通</span>
+      </div>
+    </div>
+    <div class="tl-item m2">
+      <div class="tl-week">第 2-3 周</div>
+      <div class="tl-title">M1 · 最小闭环跑通（1 电路 + 3 Tool + 1 Skill）</div>
+      <div class="tl-desc">
+        <strong>李志军</strong>集成 OpenCode + 3 个 Tool + 初始 Skill；
+        <strong>学生 A</strong> Adapter Tool 能调 ngspice 跑通 TwoSt_SMCNR，拿到 StructuredMetrics；
+        <strong>学生 B</strong> Random Search 基线可运行，产出合法参数；
+        <strong>学生 C</strong> L1 Snapshot 可记录每次迭代数据。
+        <br><span class="tag-pill pill-milestone">验收：TwoSt_SMCNR 从 Spec 到全闭环跑通（不需达标，闭环可运行即可）</span>
+      </div>
+    </div>
+    <div class="tl-item m3">
+      <div class="tl-week">第 4-6 周</div>
+      <div class="tl-title">M2 · 优化达标 + 21 电路 + SkillOpt 进化 + 全量对比</div>
+      <div class="tl-desc">
+        <strong>Optimizer Tool</strong> 从 Random → BO → LLM-Guided Hybrid；
+        <strong>Adapter Tool</strong> 覆盖全部 21 个电路；
+        <strong>State Tool</strong> L2 Delta Diff + 因果归因 + L3 知识提取可用；
+        <strong>SkillOpt 调度器</strong>完整进化循环：Rollout → Reflect → Edit → Gate；
+        <strong>AnalogSAGE baseline</strong>在 AnalogGym 21 个电路上跑出对比数字。
+        <br><span class="tag-pill pill-milestone">验收：21 电路 ≥ 90% 达标率，平均仿真次数 ≤ AnalogSAGE 同级 50%，横向对比表完整</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ Skill 进化 ════════════ -->
+<section id="skill-evo">
+  <span class="sec-num">SKILL EVOLUTION</span>
+  <h2>Skill 自进化——核心差异化能力</h2>
+  <p class="section-lead">集成了微软 SkillOpt（2026.05）的训练范式。SkillOpt 在这里的角色不是"一个外挂优化工具"，而是<strong>整个系统的调度核心</strong>——它管理哪些 Skill 被加载、什么条件触发进化、以及新 Skill 能否上线。</p>
+
+  <h3>可进化的 3 个 Skill</h3>
+  <div class="card-row">
+    <div class="card card-purple">
+      <h4>📄 SizingSkill.md</h4>
+      <p><strong>内容：</strong>参数调整策略——"增益不够时优先查什么"、"带宽和相位冲突时怎么 trade-off"</p>
+      <p><strong>初始版本：</strong>教科书级启发式规则</p>
+      <p><strong>进化方向：</strong>从仿真轨迹提炼条件-动作规则，精炼到特定拓扑的特定阶段</p>
+    </div>
+    <div class="card card-purple">
+      <h4>📄 DiagnoseSkill.md</h4>
+      <p><strong>内容：</strong>仿真失败诊断——收敛失败/振荡/工作点异常的分类判断和修复路径</p>
+      <p><strong>初始版本：</strong>ngspice error log 常见模式匹配</p>
+      <p><strong>进化方向：</strong>从实际失败案例学习新的错误模式和修复路径</p>
+    </div>
+    <div class="card card-purple">
+      <h4>📄 InitSkill.md</h4>
+      <p><strong>内容：</strong>不同拓扑的初始 Sizing 推荐——不随机，给有依据的起点</p>
+      <p><strong>初始版本：</strong>AnalogGym 各拓扑的默认参数值</p>
+      <p><strong>进化方向：</strong>跨电路迁移——NMCF 的经验可 warm-start DFCFC1</p>
+    </div>
+  </div>
+
+  <h3>SkillOpt 调度器如何工作</h3>
+  <pre class="code"># scheduler.py —— 李志军负责
+class SkillOptScheduler:
+    """
+    不阻塞 OpenCode 主流程。后台异步运行。
+    当积累够 minibatch_size 条新轨迹后，触发一轮进化。
+    """
+    def on_task_complete(self, task_id, trajectory):
+        self.buffer.append(trajectory)
+        if len(self.buffer) >= self.minibatch_size:
+            self.evolve()
+
+    def evolve(self):
+        for skill in [SizingSkill, DiagnoseSkill, InitSkill]:
+            # 1. Rollout: 在训练电路上收集当前 skill 的表现
+            baseline = self.evaluate(skill, self.train_circuits)
+
+            # 2. Reflect: 分析成功/失败轨迹，找模式
+            patterns = self.reflect(self.buffer, skill)
+
+            # 3. Edit: LLM 提出 ≤4 次编辑操作（文本学习率）
+            candidate = self.edit(skill, patterns,
+                                  rejected=self.rejected_buffer[skill.name])
+
+            # 4. Gate: 在 held-out 验证电路上评估
+            candidate_score = self.evaluate(candidate, self.val_circuits)
+
+            if candidate_score > baseline:
+                skill.update(candidate)    # 接受 → 替换线上 Skill
+            else:
+                self.rejected_buffer[skill.name].add(candidate.edits)  # 负梯度
+</pre>
+
+  <div class="highlight green">
+    <strong>验证集 = AnalogGym 中的 held-out 电路。</strong>比如 21 个电路中固定 hold-out 4 个，不参与日常实验，只在 Gate 阶段用。这是 SkillOpt 最核心的机制——<strong>没有严格门控，Skill 进化 = 随机漂移</strong>。Ratchet 论文的结论也完全一致：LLM 自己写的技能几乎没提升（+0pp），但加上严格门控后可以持续提升。
+  </div>
+
+  <h3>三个学生的 Tool 如何支撑 Skill 进化</h3>
+  <table>
+    <tr><th>SkillOpt 阶段</th><th>需要什么数据</th><th>哪个 Tool 提供</th></tr>
+    <tr><td>Rollout</td><td>每次优化的完整轨迹（params → metrics → gap）</td><td>State Tool (Snapshot + Action Log)</td></tr>
+    <tr><td>Reflect</td><td>成功 vs 失败案例的对比分析</td><td>State Tool (Delta Diff + 因果归因)</td></tr>
+    <tr><td>Edit</td><td>已知无效的编辑提案（负梯度）</td><td>Scheduler 维护的 rejected_buffer</td></tr>
+    <tr><td>Gate</td><td>Held-out 电路上的标准化评估得分</td><td>Adapter Tool (仿真) + State Tool (得分汇总)</td></tr>
+  </table>
+</section>
+
+<footer class="footer">
+  <a href="../index.html" style="color:var(--blue);text-decoration:none">← 返回博文列表</a> · 2026-06-13
+</footer>
+
+</div>
+</body>
+</html>

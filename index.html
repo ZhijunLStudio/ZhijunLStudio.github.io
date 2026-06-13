@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI4EDA · ZhijunLStudio</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#024BA1;--blue-bg:#EDF2FB;--navy:#1A2A44;--orange:#ED7D31;
+  --white:#FFFFFF;--g50:#F8F9FA;--g100:#F1F3F5;--g200:#E9ECEF;
+  --g300:#DEE2E6;--g500:#6C757D;--g700:#495057;--g900:#212529;
+  --green:#2D8B4E;--purple:#6A4C93;
+}
+body{font-family:"Helvetica Neue",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--g900);line-height:1.75;font-size:15px;background:var(--white)}
+.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:var(--blue);display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:100;box-shadow:0 1px 6px rgba(0,0,0,.15)}
+.topnav-title{color:var(--white);font-size:15px;font-weight:600;letter-spacing:.3px}
+.topnav-links a{color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;margin-left:16px;transition:color .2s}
+.topnav-links a:hover{color:var(--white)}
+.container{max-width:820px;margin:0 auto;padding:0 24px}
+.hero{padding:100px 0 52px;text-align:center}
+.hero h1{font-size:34px;font-weight:700;color:var(--blue);margin-bottom:6px}
+.hero .bio{font-size:16px;color:var(--g500);margin-bottom:20px;max-width:520px;margin-left:auto;margin-right:auto}
+.hero .links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.hero .links a{color:var(--blue);text-decoration:none;font-size:14px;font-weight:500;padding:6px 16px;border:1.5px solid var(--blue);border-radius:20px;transition:all .2s}
+.hero .links a:hover{background:var(--blue);color:var(--white)}
+section{padding:36px 0;border-top:1px solid var(--g200)}
+h2{font-size:22px;font-weight:700;color:var(--navy);margin-bottom:20px}
+.post-list{list-style:none}
+.post-item{display:block;padding:20px 0;border-bottom:1px solid var(--g100);text-decoration:none;transition:background .15s}
+.post-item:hover{background:var(--g50);margin:0 -24px;padding-left:24px;padding-right:24px;border-radius:6px}
+.post-date{font-size:12px;color:var(--g500);margin-bottom:4px}
+.post-title{font-size:18px;font-weight:600;color:var(--navy);margin-bottom:6px;text-decoration:none}
+.post-item:hover .post-title{color:var(--blue)}
+.post-desc{font-size:14px;color:var(--g500);line-height:1.6}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;margin-right:6px}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}.tag-orange{background:#FFF3E0;color:var(--orange)}
+.tag-green{background:#E8F5E9;color:var(--green)}.tag-purple{background:#F3E5F5;color:var(--purple)}
+.footer{text-align:center;padding:40px 0;font-size:12px;color:var(--g500);border-top:1px solid var(--g200)}
+@media(max-width:760px){.hero h1{font-size:24px}.topnav-links{display:none}}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="topnav-title">AI4EDA · 李志军</div>
+  <div class="topnav-links">
+    <a href="index.html">博文</a>
+    <a href="about.html">关于</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1>AI4EDA</h1>
+    <p class="bio">AI驱动的电子设计自动化研究。探索 LLM Agent、贝叶斯优化、Skill 自进化在 IC 设计中的应用。</p>
+    <div class="links">
+      <a href="https://github.com/ZhijunLStudio">GitHub</a>
+      <a href="about.html">关于我</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+<section style="border-top:none;">
+  <h2>博文</h2>
+
+  <ul class="post-list">
+
+    <a class="post-item" href="posts/harness-design-review.html">
+      <div class="post-date">2026-06-13</div>
+      <div class="post-title">Agent Harness 设计综述：17篇核心论文，看Harness如何自进化</div>
+      <div class="post-desc">从系统边界、自动生成、失败修复、模块演化和长期可靠性五个方向，系统梳理近期 Harness 研究，提炼7条设计原则和7个反模式。<span class="tag tag-purple">综述</span><span class="tag tag-blue">Harness</span></div>
+    </a>
+
+    <a class="post-item" href="posts/ic-agent-os-startup.html">
+      <div class="post-date">2026-06-13</div>
+      <div class="post-title">IC Agent OS 项目启动方案</div>
+      <div class="post-desc">基于 OpenCode + SkillOpt 调度器，5人团队6周交付，在 AnalogGym 的标准 benchmark 上构建通用 IC 设计优化引擎。<span class="tag tag-orange">项目</span><span class="tag tag-green">IC Agent OS</span></div>
+    </a>
+
+    <a class="post-item" href="posts/ic-agent-os-competitor-research.html">
+      <div class="post-date">2026-06-08</div>
+      <div class="post-title">IC Agent OS 竞品与关联项目调研报告</div>
+      <div class="post-desc">从9个维度系统扫描32个竞品/关联仓库。LLM模拟电路设计、开源EDA框架、MCP+EDA、贝叶斯优化、VLM视觉分析、记忆与轨迹、国产EDA。<span class="tag tag-orange">调研</span><span class="tag tag-blue">竞品</span></div>
+    </a>
+
+  </ul>
+</section>
+
+</div>
+
+<footer class="footer">
+  © 2026 李志军 · 由 GitHub Pages 驱动
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harness 设计综述 · 17篇论文</title>
+<style>
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+:root {
+  --blue:#024BA1; --blue-dk:#013672; --blue-lt:#557DBF; --blue-bg:#EDF2FB;
+  --navy:#1A2A44; --orange:#ED7D31; --white:#FFFFFF;
+  --g50:#F8F9FA; --g100:#F1F3F5; --g200:#E9ECEF; --g300:#DEE2E6;
+  --g500:#6C757D; --g700:#495057; --g900:#212529;
+  --green:#2D8B4E; --red:#C0392B; --purple:#6A4C93; --teal:#0D7377;
+}
+html { scroll-behavior:smooth; }
+body { font-family:"Helvetica Neue",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; color:var(--g900); line-height:1.75; font-size:15px; background:var(--white); }
+.topnav { position:fixed; top:0; left:0; right:0; height:52px; background:var(--blue); display:flex; align-items:center; justify-content:space-between; padding:0 32px; z-index:100; box-shadow:0 1px 6px rgba(0,0,0,.15); }
+.topnav-title { color:var(--white); font-size:15px; font-weight:600; letter-spacing:.3px; }
+.topnav-links a { color:rgba(255,255,255,.8); text-decoration:none; font-size:12px; margin-left:10px; transition:color .2s; }
+.topnav-links a:hover { color:var(--white); }
+.container { max-width:1020px; margin:0 auto; padding:0 24px; }
+.hero { padding:100px 0 46px; text-align:center; }
+.hero h1 { font-size:31px; font-weight:700; color:var(--blue); margin-bottom:8px; }
+.hero .subtitle { font-size:17px; color:var(--g500); margin-bottom:20px; }
+.hero .tags { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+.tag { display:inline-block; padding:4px 14px; border-radius:18px; font-size:13px; font-weight:500; }
+.tag-blue{ background:var(--blue-bg); color:var(--blue);} .tag-orange{ background:#FFF3E0; color:var(--orange);} .tag-green{ background:#E8F5E9; color:var(--green);}
+.tag-purple{ background:#F3E5F5; color:var(--purple);} .tag-teal{ background:#E0F7FA; color:var(--teal);} .tag-red{ background:#FDEAEA; color:var(--red);}
+section { padding:46px 0; border-top:1px solid var(--g200); }
+.sec-num { display:inline-block; font-size:13px; font-weight:700; color:var(--orange); letter-spacing:1px; margin-bottom:2px; }
+h2 { font-size:26px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+.section-lead { font-size:15px; color:var(--g500); margin-bottom:24px; }
+h3 { font-size:18px; font-weight:600; color:var(--blue); margin:28px 0 12px; }
+h4 { font-size:15px; font-weight:600; color:var(--navy); margin:18px 0 8px; }
+p { margin-bottom:10px; }
+.highlight { background:var(--blue-bg); border-left:4px solid var(--blue); border-radius:0 6px 6px 0; padding:12px 18px; margin:16px 0; font-size:14px; color:var(--navy); }
+.highlight strong { color:var(--blue); }
+.highlight.orange { border-left-color:var(--orange); background:#FFF8F0; } .highlight.orange strong { color:var(--orange); }
+.highlight.green { border-left-color:var(--green); background:#F2FBF5; } .highlight.green strong { color:var(--green); }
+.highlight.purple { border-left-color:var(--purple); background:#F8F4FA; } .highlight.purple strong { color:var(--purple); }
+.highlight.red { border-left-color:var(--red); background:#FFF5F5; } .highlight.red strong { color:var(--red); }
+.quote-banner { background:var(--navy); color:var(--white); border-radius:8px; padding:18px 24px; margin:18px 0; font-size:16px; font-style:italic; text-align:center; }
+.quote-banner strong { color:#FFD27F; font-style:normal; }
+table { width:100%; border-collapse:collapse; font-size:13px; margin:14px 0; }
+th { background:var(--blue); color:var(--white); padding:8px 12px; text-align:center; font-weight:600; font-size:12px; }
+td { padding:7px 12px; text-align:left; border-bottom:1px solid var(--g300); vertical-align:top; }
+tr:nth-child(even) td { background:var(--g50); }
+td.center,th.center { text-align:center; }
+.key-nums { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin:20px 0; }
+.key-num { text-align:center; padding:16px 24px; background:var(--blue-bg); border-radius:10px; min-width:110px; }
+.key-num .num { font-size:28px; font-weight:700; color:var(--blue); line-height:1.1; }
+.key-num .num.red { color:var(--red); }
+.key-num .label { font-size:12px; color:var(--g500); margin-top:4px; }
+.card-row { display:flex; gap:14px; margin:14px 0; flex-wrap:wrap; }
+.card { flex:1; min-width:220px; border:1.5px solid var(--g300); border-radius:8px; padding:18px 20px; background:var(--white); }
+.card-blue{ border-color:var(--blue); background:var(--blue-bg);} .card-green{ border-color:var(--green); background:#F2FBF5;}
+.card-orange{ border-color:var(--orange); background:#FFF8F0;} .card-purple{ border-color:var(--purple); background:#F8F4FA;}
+.card-red{ border-color:var(--red); background:#FFF5F5;}
+.card h4 { font-size:15px; font-weight:600; margin-bottom:8px; }
+.card-blue h4{ color:var(--blue);} .card-green h4{ color:var(--green);} .card-orange h4{ color:var(--orange);} .card-purple h4{ color:var(--purple);} .card-red h4{ color:var(--red);}
+.card p,.card li { font-size:13px; color:var(--g700); } .card ul { padding-left:15px; } .card li { margin-bottom:3px; }
+pre.code { font-size:12px; line-height:1.5; background:var(--g50); color:var(--g900); padding:14px 16px; border-radius:6px; overflow-x:auto; margin:12px 0; border:1px solid var(--g200); }
+pre.code-small { font-size:11px; line-height:1.45; }
+.footer { text-align:center; padding:36px 0; font-size:12px; color:var(--g500); border-top:1px solid var(--g200); }
+.paper-ref { font-size:12px; color:var(--g500); }
+.principle-num { display:inline-block; width:28px; height:28px; background:var(--blue); color:var(--white); border-radius:14px; text-align:center; line-height:28px; font-weight:700; font-size:14px; margin-right:8px; }
+.anti-num { display:inline-block; width:28px; height:28px; background:var(--red); color:var(--white); border-radius:14px; text-align:center; line-height:28px; font-weight:700; font-size:14px; margin-right:8px; }
+.file-tree { background:var(--g50); border:1px solid var(--g300); border-radius:6px; padding:14px 18px; margin:14px 0; font-family:ui-monospace,Menlo,monospace; font-size:12px; line-height:1.6; }
+@media (max-width:760px){
+  .card-row{ flex-direction:column; } .hero h1{ font-size:22px; }
+  .topnav-links{ display:none; }
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="topnav-title">李志军 · 博文</div>
+  <div class="topnav-links">
+    <a href="../index.html">← 返回</a>
+    <a href="#landscape">研究格局</a>
+    <a href="#principles">设计原则</a>
+    <a href="#antipatterns">反模式</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1>Agent Harness 设计综述</h1>
+    <p class="subtitle">17 篇核心论文 · 7 条设计原则 · 面向 IC-Agent-OS 的工程建议</p>
+    <div class="tags">
+      <span class="tag tag-green">系统边界 · 自动生成 · 失败修复 · 模块演化 · 长期可靠性</span>
+      <span class="tag tag-blue">AS_OF: 2026-06-13</span>
+      <span class="tag tag-purple">含具体文件系统布局建议</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ════════════ 总览 ════════════ -->
+<section id="overview" style="border-top:none;">
+  <span class="sec-num">EXECUTIVE SUMMARY</span>
+  <h2>核心结论</h2>
+
+  <div class="quote-banner">
+    <strong>Agent 的上限不是模型决定的，是 Harness 决定的。</strong>同样的模型，只改 Harness（不改权重），coding benchmark 提升 10 倍；GPT-5.2 从 52.8% → 66.5%（+13.7pp），纯靠 prompt 结构 + 中间件 + 自验证钩子。这些 Harness-only 的收益远超典型模型升级的 2-4pp。
+  </div>
+
+  <div class="key-nums">
+    <div class="key-num"><div class="num">17</div><div class="label">核心论文</div></div>
+    <div class="key-num"><div class="num">7</div><div class="label">设计原则</div></div>
+    <div class="key-num"><div class="num">7</div><div class="label">反模式</div></div>
+    <div class="key-num"><div class="num">5</div><div class="label">研究主题</div></div>
+    <div class="key-num"><div class="num red">≥50%</div><div class="label">中程违规靠最终输出发现不了</div></div>
+  </div>
+</section>
+
+<!-- ════════════ 研究格局 ════════════ -->
+<section id="landscape">
+  <span class="sec-num">PART 1</span>
+  <h2>研究格局（按主题组织）</h2>
+  <p class="section-lead">17 篇论文覆盖 5 个紧密关联的主题，从 Harness 的根本定义到长期稳定性。</p>
+
+  <h3>主题 A：Harness 的根本定义与哲学转向</h3>
+  <p><strong>Code as Agent Harness</strong>（UIUC/Meta/Stanford，arXiv:2605.18747，102页综述覆盖100+论文）：代码不再是 LLM 的输出目标，而是智能体推理、行动、环境建模和验证的<strong>操作基板</strong>。三层架构——Harness Interface（接口层）、Harness Mechanisms（Plan-Execute-Verify + 记忆 + 工具 + 反馈）、Multi-Agent Scaling（共享代码工件协调多智能体）。核心命题：让每个智能体动作都产生可验证的代码工件，将 Agent 从黑箱文本生成器转变为一个可审计、可重放的状态机。</p>
+
+  <p><strong>Agent Harness Engineering: A Survey</strong>（CMU/Yale/JHU/Amazon 等，TMLR 在审，覆盖170+开源项目）：提出 ETCLOVG 七层框架——Execution（执行环境）、Tool（工具接口）、Context（上下文与记忆管理）、Lifecycle（生命周期编排）、Observability（可观测性）、Verification（验证与评估）、Governance（治理与安全）。前三层是结构核心，后三层是控制平面。关键论断：<strong>每个 Harness 组件编码了模型"做不到什么"的假设，而这些假设会随模型升级而过时</strong>——Harness 需要自简化机制。</p>
+
+  <div class="highlight">
+    <strong>工程阶段演进：</strong>Prompt Engineering（2022-2024，优化单一文本输入）→ Context Engineering（2025，管理多信息流注入上下文窗口）→ <strong>Harness Engineering（2026，基础设施层维护状态、中介工具、注入反馈、执行约束、验证进展）</strong>。每个阶段内含前一阶段，边际工程努力的重心在不断上移。
+  </div>
+
+  <h3>主题 B：自动化 Harness 生成与演化</h3>
+
+  <div class="card-row">
+    <div class="card card-blue">
+      <h4>AutoHarness（DeepMind）</h4>
+      <p>小模型通过环境错误反馈迭代自优化，自动生成约束检查代码。14.5次迭代消除所有非法动作。最终产物是纯Python，零推理时LLM依赖。Flash+Harness 打败了裸 Gemini-2.5-Pro。</p>
+    </div>
+    <div class="card card-blue">
+      <h4>Meta-Harness（Stanford/MIT）</h4>
+      <p>将 Harness 当做可搜索的代码对象。优化器读取源码+全执行轨迹+历史分数，在文件系统中选择性检索（故意不压缩），发现环境自举等策略。TB2 达 76.4%，在海库4.5上排名第一。</p>
+    </div>
+    <div class="card card-blue">
+      <h4>AHE（复旦/北大）</h4>
+      <p>每次 Harness 编辑附"可证伪合约"——改前声明预期改善的指标和幅度，跑完后验证。10轮演化后 TB2: 69.7%→77.0%。收益来自工具+中间件+长期记忆，不是 system prompt。</p>
+    </div>
+  </div>
+  <div class="card-row">
+    <div class="card card-blue">
+      <h4>The Last Harness You'll Ever Build</h4>
+      <p>双层元演化框架。内层 Worker+Evaluator+Evolution Agent 优化单任务 Harness；外层跨任务族优化演化蓝图。目标：对新领域 Harness 适配实现零人工干预。</p>
+    </div>
+    <div class="card card-blue">
+      <h4>Self-Harness（上海AI Lab）</h4>
+      <p>LLM Agent 从最小初始 Harness 出发，依据自身轨迹挖掘失败模式→提案修改→回归验证。MiniMax M2.5 从40.5%→61.9%（+21.4pp）。Harness 从设计之初就是机器可修改的。</p>
+    </div>
+  </div>
+
+  <h3>主题 C：技能（Skill）作为外部化可训练状态</h3>
+
+  <div class="card-row">
+    <div class="card card-purple">
+      <h4>SkillOpt（微软/上海交大/同济/复旦）</h4>
+      <p>将 Skill 文档视为可训练的外部状态。应用深度学习训练纪律：文本学习率（每步≤4编辑）、验证门控（严格提升才接受）、拒绝编辑缓冲（负梯度记忆）、epoch级慢更新。52/52评测组合全最优。仅需1-4次接受编辑即获显著增益。</p>
+    </div>
+    <div class="card card-purple">
+      <h4>RHO（MSRA/港城大）</h4>
+      <p>完全自监督——不需要任何标签。DPP采样历史困难案例→自验证+自一致性信号诊断失败→成对自偏好选择最佳Harness更新。SWE-Bench Pro: 59%→78%（+19pp），单轮。</p>
+    </div>
+    <div class="card card-purple">
+      <h4>M-star（港城大/微软）</h4>
+      <p>记忆是可演化的Python程序——schema+存储逻辑+工作流指令联合进化。不同任务域需要完全不同的存储架构：具身规划用SQLite动作缓存，对话用双ChromaDB+SQLite。</p>
+    </div>
+  </div>
+
+  <h3>主题 D：Harness 诊断、审计与效率度量</h3>
+
+  <div class="card-row">
+    <div class="card card-orange">
+      <h4>HarnessFix（中科院软件所）</h4>
+      <p>Trace-grounded 诊断修复。HTIR 中间表示将执行轨迹和 Harness 代码统一到可诊断图。步骤级根因归因→层诊断→缺陷合并→范围受控修复补丁。4基准相对提升15.2%-50.0%。Prompt-only修复在TB2上零收益。</p>
+    </div>
+    <div class="card card-orange">
+      <h4>EFC Scaling Laws（哈工大）</h4>
+      <p>有效反馈计算（EFC）= 信息性×有效性×非冗余性×留存性。预测失败率的R²达0.99（原始token/tool call仅≤0.42）。固定预算下改善反馈质量，成功率从0.27→0.90。</p>
+    </div>
+    <div class="card card-orange">
+      <h4>HarnessAudit（UCSB）</h4>
+      <p>210任务审计基准。>50%智能体中程违规仅靠最终输出检查无法发现。多智能体配置使违规率从单智能体的0.91骤降至0.64。最佳系统总分仅0.32——距离安全可靠还差很远。</p>
+    </div>
+  </div>
+
+  <h3>主题 E：生命周期管理与长期稳定性</h3>
+
+  <div class="card-row">
+    <div class="card card-green">
+      <h4>Agent Lifespan Engineering（UT Austin）</h4>
+      <p>四种记忆退化机制：压缩损失、干扰排斥、修订累积误差、维护冲击。模型越大不一定越好——GPT-4o在累加器任务上甚至比小模型更差。自主Agent存在写入-读取断层：写了有用文件但不重读。</p>
+    </div>
+    <div class="card card-green">
+      <h4>Life-Harness（北大）</h4>
+      <p>四层运行时接口适配：环境契约层+过程技能层+动作实现层+轨迹调节层。Qwen3-4B轨迹演化出的Harness可迁移到17个其他模型，平均相对提升88.5%。部分失败可通过接口适配解决无需改模型。</p>
+    </div>
+    <div class="card card-green">
+      <h4>MOSS（中科大/港科大）</h4>
+      <p>首次让Harness演化进入源码级：路由、钩子排序、状态不变式、调度逻辑。编排器拥有安全门控（健康探测、回滚到last-known-good、用户同意），代码修改代理仅拥有局部编辑动作。单轮+141%相对提升。</p>
+    </div>
+  </div>
+
+  <div class="card-row">
+    <div class="card card-green">
+      <h4>Harness Updating ≠ Harness Benefit</h4>
+      <p>Harness更新能力和受益能力是两种无关的能力。Qwen3.5-9B更新Skill的能力与Opus 4.6持平。弱模型瓶颈在"加载Skill"和"遵循Skill"，中等能力模型受益最大，强模型因能力饱和边际收益小。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ 7条设计原则 ════════════ -->
+<section id="principles">
+  <span class="sec-num">PART 2</span>
+  <h2>好 Harness 的 7 条设计原则</h2>
+  <p class="section-lead">每条原则都有具体论文支撑，有数字，有反例。</p>
+
+  <h3><span class="principle-num">1</span> 每步产出可验证的代码工件（Code-First Auditability）</h3>
+  <p><span class="paper-ref">来源：Code as Agent Harness, HarnessAudit, HarnessFix</span></p>
+  <p>每个智能体动作必须返回机器可验证的工件，非自然语言声明。对于 IC-Agent-OS：Forge 输出 netlist + 参数 JSON + 确定性生成脚本；Measure 输出固定 schema 的结构化 metrics + 仿真原始输出；Refine 输出可应用的参数 diff + LLM 推理链原文。</p>
+  <div class="highlight green">
+    <strong>可接受：</strong><code>{"dc_gain": 72.3, "ugbw_mhz": 154.2, "phase_margin_deg": 62.1, "convergence": true, "drc_violations": 0}</code><br>
+    <strong>不可接受：</strong>"仿真通过了，性能看起来不错。"
+  </div>
+
+  <h3><span class="principle-num">2</span> Harness 必须是可版本化、可机器修改的独立文件</h3>
+  <p><span class="paper-ref">来源：Self-Harness, MOSS, SkillOpt</span></p>
+  <p>Skill 文件、Tool 定义、权限策略全部外置为 <code>.md</code> / <code>.py</code> / <code>.yaml</code>，每次修改产生 git diff，附带回归测试套件。Self-Harness 的核心教训：Harness 从设计第一天就要为<strong>机器修改</strong>而生——可程序化读取、diff、测试、回滚。</p>
+
+  <h3><span class="principle-num">3</span> 每次 Harness 编辑附可证伪合约（Falsifiable Contract）</h3>
+  <p><span class="paper-ref">来源：AHE (arXiv:2604.25850)</span></p>
+  <p>改之前必须记录四要素：(1)改了什么(精确diff)、(2)预期哪个指标改善、(3)改善多少、(4)跑完验证后预测-实际差异反馈回下轮。AHE 证明这消除了 trial-and-error 震荡——无合约时系统在相同（或相反）改动之间反复，无法收敛。</p>
+
+  <h3><span class="principle-num">4</span> 全执行轨迹保留在文件系统，不压缩为标量分数</h3>
+  <p><span class="paper-ref">来源：Meta-Harness, EFC</span></p>
+  <p>EFC 论文核心数字：<strong>标量分数压掉了 ≥58% 的预测力</strong>（R² 从 0.99 跌至 ≤0.42）。保留每轮迭代的全部原始数据（netlist 前后对比、仿真波形、DRC 报告、收敛日志、LLM 推理链），故意让目录大于优化器上下文窗口，迫使选择性检索。</p>
+
+  <h3><span class="principle-num">5</span> 编排器与代码执行器严格分离</h3>
+  <p><span class="paper-ref">来源：MOSS, Harness Updating ≠ Harness Benefit</span></p>
+  <table>
+    <tr><th style="width:30%">编排器（Orchestrator）</th><th style="width:30%">代码执行器（Code-Modification Agent）</th></tr>
+    <tr><td>阶段排序、判定、循环退出、交换时机</td><td>仅拥有局部编辑动作</td></tr>
+    <tr><td>健康探测、回滚到 last-known-good、用户同意</td><td>可插拔的外部 CLI 进程</td></tr>
+    <tr><td>SkillOpt 调度器担当</td><td>OpenCode 的三个 Tool 担当</td></tr>
+  </table>
+  <p>无论执行器怎么换模型，编排器的安全保证不变。</p>
+
+  <h3><span class="principle-num">6</span> 记忆是可演化的编程接口，不是固定数据存储</h3>
+  <p><span class="paper-ref">来源：M-star, Agent Lifespan Engineering</span></p>
+  <p>定义一组原语操作（设计参数历史SQL表、电路拓扑向量索引、收敛失败模式堆），暴露 write()/read() 契约，让搜索为每类电路任务自动发现最优存储架构。埋入三阶段健康探测：写入保真度→检索精度→利用率。</p>
+
+  <h3><span class="principle-num">7</span> 优化 η = 有效反馈 / 原始开销（EFC Efficiency）</h3>
+  <p><span class="paper-ref">来源：EFC Scaling Laws (arXiv:2605.29682)</span></p>
+  <p>对每轮仿真结果喂给 Optimizer 之前，检查四项 EFC 因子——信息性（与当前任务相关？）、有效性（来自仿真器输出非LLM推测？）、非冗余性（不重复已有发现？）、留存性（会被后续决策记住？）。任一因子为 0，该反馈事件贡献的有效计算接近 0。固定预算下改善反馈质量：<strong>成功率从 0.27→0.90</strong>。</p>
+</section>
+
+<!-- ════════════ IC-Agent-OS 具体建议 ════════════ -->
+<section id="ic-agent">
+  <span class="sec-num">PART 3</span>
+  <h2>针对 IC-Agent-OS 技术栈的具体建议</h2>
+
+  <h3>3.1 OpenCode 运行时层面</h3>
+  <div class="highlight">
+    <strong>(a) 安装 Trace Provenance 机制</strong>（HarnessFix）：为每个 Tool 调用注入 span——记录从前面哪几步获取了输入证据、什么控制决策触发、产生了什么状态效果。<br><br>
+    <strong>(b) 构建隐藏的轨迹级审计通道</strong>（HarnessAudit）：为三个 Tool 声明权限矩阵——Adapter 只读外部仿真器配置+写入适配后参数；Optimizer 只读当前设计参数+写入优化候选（需门控）；State 只读所有文件+写入状态快照（受限路径）。<br><br>
+    <strong>(c) 分离 Agent 模型与 Evolver 模型</strong>（Harness Updating ≠ Benefit）：Forge/Refine 用最强模型（Claude 4 / Gemini 2.5 Pro）；Skill 更新用小模型（Qwen3.5 级，AutoHarness 证明了完全足够）；必须实现显式 Harness 加载触发 + 中程遵守检查点。
+  </div>
+
+  <h3>3.2 SkillOpt 调度器层面</h3>
+  <table>
+    <tr><th style="width:18%">机制</th><th>具体设定</th><th>来源</th></tr>
+    <tr><td><strong>文本学习率 L_t</strong></td><td>每步 ≤ 2-4 编辑，cosine decay。6 周 = 6 个 epoch</td><td>SkillOpt</td></tr>
+    <tr><td><strong>拒绝编辑缓冲</strong></td><td><code>rejected_edits.jsonl</code>，记录内容+epoch+被拒原因，下次提议前强制检查</td><td>SkillOpt</td></tr>
+    <tr><td><strong>Epoch 级元指导</strong></td><td>每周汇总接受/拒绝模式 → <code>meta_guidance.md</code>："缩小搜索空间边界在第2周使收敛失败-40%"</td><td>SkillOpt</td></tr>
+    <tr><td><strong>验证集划分</strong></td><td>21 电路 → 15 训练 + 3 验证（门控用）+ 3 保留测试（最终评估）</td><td>SkillOpt</td></tr>
+    <tr><td><strong>验证门控</strong></td><td>只在验证集（3电路）上评估；严格提升才接受；去掉门控 → SpreadsheetBench: 77.5→55.0</td><td>SkillOpt</td></tr>
+  </table>
+
+  <h3>3.3 文件系统布局</h3>
+  <div class="file-tree">ic-agent-os/
+├── harness/
+│   ├── tools/
+│   │   ├── adapter/
+│   │   │   ├── definition.py        # Tool 定义
+│   │   │   ├── schema.json           # 输入输出 schema
+│   │   │   └── CHANGELOG.md          # 每次修改附可证伪合约
+│   │   ├── optimizer/
+│   │   │   ├── definition.py
+│   │   │   ├── schema.json
+│   │   │   └── CHANGELOG.md
+│   │   └── state/
+│   │       ├── definition.py
+│   │       ├── schema.json
+│   │       └── CHANGELOG.md
+│   ├── skills/
+│   │   ├── forge_strategy.md         # SkillOpt 管理的技能文件
+│   │   ├── refine_diagnostics.md
+│   │   └── optimizer_search.md
+│   ├── orchestrator/
+│   │   ├── scheduler.py              # SkillOpt 调度器（编排器）
+│   │   ├── safety_gates.py           # 健康探测、回滚、门控
+│   │   └── meta_guidance.md          # epoch 级元指导
+│   ├── audit/
+│   │   ├── permission_policy.yaml    # 声明式权限矩阵
+│   │   └── trace_config.yaml         # trace provenance 配置
+│   └── memory/
+│       ├── operations.py             # write()/read() 原语
+│       └── probes.py                 # 写入保真度、检索精度、利用率探针
+├── iterations/
+│   └── {timestamp}_{circuit}/
+│       ├── forge/                    # 原则4：全轨迹保留
+│       ├── measure/
+│       └── refine/
+├── diagnostics/
+│   ├── efc_metrics.jsonl             # 每轮 EFC 四项因子评分
+│   ├── rejected_edits.jsonl          # SkillOpt 被拒缓冲
+│   └── contract_log.jsonl            # 可证伪合约记录
+└── benchmarks/
+    └── circuits/
+        ├── train/                    # 15 个训练电路
+        ├── val/                      # 3 个验证电路（SkillOpt 门控）
+        └── test/                     # 3 个保留测试电路</div>
+
+  <h3>3.4 三个 Tool 的关键约束</h3>
+  <table>
+    <tr><th style="width:14%">Tool</th><th>输出必须</th><th>输出禁止</th></tr>
+    <tr>
+      <td><strong>Adapter</strong></td>
+      <td>固定 schema 的 JSON + 确定性生成脚本；记录输入格式版本号 + 目标仿真器版本号</td>
+      <td>"仿真通过了" 式自然语言总结作为唯一输出</td>
+    </tr>
+    <tr>
+      <td><strong>Optimizer</strong></td>
+      <td>相对当前设计的可应用 diff；优化候选经编排器门控（参数在工艺允许范围？会产生已知无效拓扑？）；记录采样空间+算法+收敛状态</td>
+      <td>"把 W/L 改大一些" 式模糊建议</td>
+    </tr>
+    <tr>
+      <td><strong>State</strong></td>
+      <td>完整设计上下文（网表+参数+已验证性能指标），可从快照完全恢复实验；M-star式可编程接口</td>
+      <td>仅键值对存最终分数，丢掉中间状态</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ════════════ 反模式 ════════════ -->
+<section id="antipatterns">
+  <span class="sec-num">PART 4</span>
+  <h2>绝对不要做的事（7 个反模式）</h2>
+
+  <h3><span class="anti-num">1</span> 用自然语言代替结构化工件</h3>
+  <div class="highlight red">
+    <strong>表现：</strong>Forge 后输出"我调整了输入差分对尺寸改善增益"而不给具体新参数。<br>
+    <strong>为何致命：</strong>无法 diff、无法重放、无法验证。审计通道无法检测"声明"与"实际"之间的差异。<br>
+    <strong>规则：</strong>禁止任何 Tool 返回不含结构化数据的自然语言作为唯一输出。
+  </div>
+
+  <h3><span class="anti-num">2</span> 将反馈信号压缩为单一标量分数</h3>
+  <div class="highlight red">
+    <strong>表现：</strong>只回传"FOM = 0.73"给 Optimizer。<br>
+    <strong>为何致命：</strong>EFC 论文证明标量压下损失了 ≥58% 的预测力。Optimizer 无法从标量推断哪个设计决策导致了改善或退化。<br>
+    <strong>规则：</strong>全设计状态 + 全仿真输出 + 全DRC报告 + 全推理链保留到文件系统。
+  </div>
+
+  <h3><span class="anti-num">3</span> 将 Harness 配置硬编码在 Prompt 内</h3>
+  <div class="highlight red">
+    <strong>表现：</strong>在 System Prompt 里写"如果 DRC 违规 > 0 则采用保守裕度策略"。<br>
+    <strong>为何致命：</strong>无法被 SkillOpt 自动演化、无法 git 追踪、无法被审计通道检查。<br>
+    <strong>规则：</strong>所有策略、技能、约束必须外部化为可版本化文件，通过文件系统引用加载。
+  </div>
+
+  <h3><span class="anti-num">4</span> 盲试式 Harness 调优，无可证伪合约</h3>
+  <div class="highlight red">
+    <strong>表现：</strong>"收敛问题减少了，可能是那个 prompt 改动起了作用，可能不是，继续改吧。"<br>
+    <strong>为何致命：</strong>AHE 证明无合约时系统在相同（或相反）改动之间反复震荡，无法收敛。<br>
+    <strong>规则：</strong>每次 Harness 修改记录四要素（改了什么、预期什么指标、预期多少、实际多少）。
+  </div>
+
+  <h3><span class="anti-num">5</span> 依赖 Agent 自报作为正确性验证</h3>
+  <div class="highlight red">
+    <strong>表现：</strong>最终输出检查通过了，认为整个流程安全合法。<br>
+    <strong>为何致命：</strong>HarnessAudit 证明 <strong>>50% 的违规发生在中程</strong>（中间步骤的错误工具调用、越权文件访问），永远不会出现在最终输出。<br>
+    <strong>规则：</strong>在每个工具调用点注入 Harness 级别审计，独立于 Agent 自报。
+  </div>
+
+  <h3><span class="anti-num">6</span> 将进化模型和任务解决模型混用同一预算</h3>
+  <div class="highlight red">
+    <strong>表现：</strong>每次 Skill 改进都跑完整 21 电路评估，还用最贵模型。<br>
+    <strong>为何致命：</strong>Skill 更新能力与模型规模无关——Qwen3.5-9B 就够了。把 Opus 用在 Skill 微调上是浪费。<br>
+    <strong>规则：</strong>小模型迭代 Skill 和 Tool 定义；大模型只用于求解具体电路任务；验证集仅 3 个电路用于门控决策。
+  </div>
+
+  <h3><span class="anti-num">7</span> 用"增大上下文窗口"解决记忆问题</h3>
+  <div class="highlight red">
+    <strong>表现：</strong>检索质量下降 → 推测上下文不够 → 加大窗口。<br>
+    <strong>为何致命：</strong>记忆退化有四种不同机制（写入失误、检索退化、利用失效、状态膨胀），加大上下文治征不治因。<br>
+    <strong>规则：</strong>先诊断退化发生在记忆管道的哪个阶段，再施加定向修复（检索预算控制器、结构化状态覆盖、谨慎压缩策略）。
+  </div>
+</section>
+
+<!-- ════════════ 论文索引 ════════════ -->
+<section id="papers">
+  <span class="sec-num">APPENDIX</span>
+  <h2>17 篇论文索引</h2>
+
+  <table>
+    <tr><th style="width:6%">#</th><th style="width:25%">论文</th><th style="width:22%">机构</th><th>核心贡献</th><th style="width:12%">关键数字</th></tr>
+    <tr>
+      <td class="center">1</td>
+      <td><strong>Agent Harness Engineering: A Survey</strong></td>
+      <td>CMU/Yale/JHU/Amazon 等</td>
+      <td>ETCLOVG 七层框架；170+开源项目映射；Harness 是可靠性的约束瓶颈</td>
+      <td>Harness-only 改动 → 10× coding 提升</td>
+    </tr>
+    <tr>
+      <td class="center">2</td>
+      <td><strong>Code as Agent Harness</strong></td>
+      <td>UIUC/Meta/Stanford</td>
+      <td>代码作为 Agent 运行时操作基板；三层分类法覆盖100+论文</td>
+      <td>102页综述，7领域覆盖</td>
+    </tr>
+    <tr>
+      <td class="center">3</td>
+      <td><strong>AutoHarness</strong></td>
+      <td>Google DeepMind</td>
+      <td>LLM 自动生成约束代码；小模型+Harness 打败大模型</td>
+      <td>14.5次迭代，100%合法动作</td>
+    </tr>
+    <tr>
+      <td class="center">4</td>
+      <td><strong>The Last Harness You'll Ever Build</strong></td>
+      <td>—</td>
+      <td>双层元演化：内层优化单任务Harness，外层跨任务优化演化蓝图</td>
+      <td>理论框架</td>
+    </tr>
+    <tr>
+      <td class="center">5</td>
+      <td><strong>Meta-Harness</strong></td>
+      <td>Stanford/MIT/KRAFTON</td>
+      <td>文件系统级别全轨迹保留+搜索；环境自举发现</td>
+      <td>TB2: 76.4%；R²: 0.99 vs 0.42（标量）</td>
+    </tr>
+    <tr>
+      <td class="center">6</td>
+      <td><strong>Agentic Harness Engineering (AHE)</strong></td>
+      <td>复旦/北大等</td>
+      <td>可证伪合约驱动 Harness 演化；三类可观测性</td>
+      <td>TB2: 69.7%→77.0%（+7.3pp）</td>
+    </tr>
+    <tr>
+      <td class="center">7</td>
+      <td><strong>Self-Harness</strong></td>
+      <td>上海 AI Lab</td>
+      <td>Agent 从最小 Harness 出发，依自身轨迹改进</td>
+      <td>MiniMax M2.5: +21.4pp</td>
+    </tr>
+    <tr>
+      <td class="center">8</td>
+      <td><strong>RHO: Retrospective Harness Optimization</strong></td>
+      <td>MSRA/港城大</td>
+      <td>完全自监督，无需标签；DPP+自验证+自偏好</td>
+      <td>SWE-Bench Pro: 59%→78%（+19pp）</td>
+    </tr>
+    <tr>
+      <td class="center">9</td>
+      <td><strong>HarnessFix</strong></td>
+      <td>中科院软件所等</td>
+      <td>Trace-grounded诊断修复；HTIR中间表示；7层覆盖</td>
+      <td>4基准相对提升15.2%-50.0%</td>
+    </tr>
+    <tr>
+      <td class="center">10</td>
+      <td><strong>Harness Updating ≠ Harness Benefit</strong></td>
+      <td>—</td>
+      <td>更新能力与受益能力分离；9B模型更新能力持平Opus</td>
+      <td>Agent能力方差36pp，Evolver仅5.1pp</td>
+    </tr>
+    <tr>
+      <td class="center">11</td>
+      <td><strong>M-star</strong></td>
+      <td>港城大/微软</td>
+      <td>记忆=可演化Python程序；schema+逻辑+指令联合进化</td>
+      <td>8项指标7项最优</td>
+    </tr>
+    <tr>
+      <td class="center">12</td>
+      <td><strong>SkillOpt</strong></td>
+      <td>微软/上海交大/同济/复旦</td>
+      <td>文本学习率+验证门控+拒绝缓冲+epoch元更新</td>
+      <td>52/52全最优；平均+23.5分</td>
+    </tr>
+    <tr>
+      <td class="center">13</td>
+      <td><strong>Life-Harness</strong></td>
+      <td>北大</td>
+      <td>四层运行时接口适配；从小模型轨迹演化，跨模型迁移</td>
+      <td>126组合116改善；平均+88.5%</td>
+    </tr>
+    <tr>
+      <td class="center">14</td>
+      <td><strong>MOSS</strong></td>
+      <td>中科大/港科大/浸会</td>
+      <td>源码级Harness自演化；编排器-执行器安全分离</td>
+      <td>单轮+141%相对提升</td>
+    </tr>
+    <tr>
+      <td class="center">15</td>
+      <td><strong>Scaling Laws for Agent Harnesses (EFC)</strong></td>
+      <td>哈工大</td>
+      <td>有效反馈计算量；四项因子乘积度量；成功率的power-law模型</td>
+      <td>R²=0.99；改善质量→成功率0.27→0.90</td>
+    </tr>
+    <tr>
+      <td class="center">16</td>
+      <td><strong>Agent Lifespan Engineering</strong></td>
+      <td>UT Austin</td>
+      <td>AgingBench；四种记忆退化机制；行为vs事实发散</td>
+      <td>14模型×7场景×8-200轮</td>
+    </tr>
+    <tr>
+      <td class="center">17</td>
+      <td><strong>Auditing Agent Harness Safety</strong></td>
+      <td>UCSB</td>
+      <td>轨迹级安全审计；210任务基准；多智能体安全面扩大</td>
+      <td>>50%违规发生在中程；最佳总分仅0.32</td>
+    </tr>
+  </table>
+</section>
+
+<footer class="footer">
+  <a href="../index.html" style="color:var(--blue);text-decoration:none">← 返回博文列表</a> · 2026-06-13
+</footer>
+
+</div>
+</body>
+</html>
