@@ -87,7 +87,7 @@ pre.code-small { font-size:11px; line-height:1.45; }
 <header class="hero">
   <div class="container">
     <h1>Agent Harness 设计综述</h1>
-    <p class="subtitle">17 篇核心论文 · 7 条设计原则 · 面向 IC-Agent-OS 的工程建议</p>
+    <p class="subtitle">17 篇核心论文 · 7 条设计原则 · 7 个反模式</p>
     <div class="tags">
       <span class="tag tag-green">系统边界 · 自动生成 · 失败修复 · 模块演化 · 长期可靠性</span>
       <span class="tag tag-blue">AS_OF: 2026-06-13</span>
@@ -225,7 +225,7 @@ pre.code-small { font-size:11px; line-height:1.45; }
 
   <h3><span class="principle-num">1</span> 每步产出可验证的代码工件（Code-First Auditability）</h3>
   <p><span class="paper-ref">来源：Code as Agent Harness, HarnessAudit, HarnessFix</span></p>
-  <p>每个智能体动作必须返回机器可验证的工件，非自然语言声明。对于 IC-Agent-OS：Forge 输出 netlist + 参数 JSON + 确定性生成脚本；Measure 输出固定 schema 的结构化 metrics + 仿真原始输出；Refine 输出可应用的参数 diff + LLM 推理链原文。</p>
+  <p>每个智能体动作必须返回机器可验证的工件，非自然语言声明。例如：仿真阶段输出固定 schema 的结构化 metrics + 原始输出文件；优化阶段输出可应用的参数 diff + LLM 推理链原文；设计阶段输出 netlist + 参数 JSON + 确定性生成脚本。</p>
   <div class="highlight green">
     <strong>可接受：</strong><code>{"dc_gain": 72.3, "ugbw_mhz": 154.2, "phase_margin_deg": 62.1, "convergence": true, "drc_violations": 0}</code><br>
     <strong>不可接受：</strong>"仿真通过了，性能看起来不错。"
@@ -262,10 +262,10 @@ pre.code-small { font-size:11px; line-height:1.45; }
   <p>对每轮仿真结果喂给 Optimizer 之前，检查四项 EFC 因子——信息性（与当前任务相关？）、有效性（来自仿真器输出非LLM推测？）、非冗余性（不重复已有发现？）、留存性（会被后续决策记住？）。任一因子为 0，该反馈事件贡献的有效计算接近 0。固定预算下改善反馈质量：<strong>成功率从 0.27→0.90</strong>。</p>
 </section>
 
-<!-- ════════════ IC-Agent-OS 具体建议 ════════════ -->
-<section id="ic-agent">
+<!-- ════════════ 工程落地建议 ════════════ -->
+<section id="engineering">
   <span class="sec-num">PART 3</span>
-  <h2>针对 IC-Agent-OS 技术栈的具体建议</h2>
+  <h2>工程落地建议</h2>
 
   <h3>3.1 OpenCode 运行时层面</h3>
   <div class="highlight">
@@ -285,7 +285,7 @@ pre.code-small { font-size:11px; line-height:1.45; }
   </table>
 
   <h3>3.3 文件系统布局</h3>
-  <div class="file-tree">ic-agent-os/
+  <div class="file-tree">project/
 ├── harness/
 │   ├── tools/
 │   │   ├── adapter/
